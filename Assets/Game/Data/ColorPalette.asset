@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dce3876a83d6c344ab48410bb9151fd5, type: 3}
+  m_Name: ColorPalette
+  m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Data.ColorPalette
+  entries:
+  - id: 0
+    color: {r: 0.18, g: 0.52, b: 1, a: 1}
+    material: {fileID: 2100000, guid: 1e4d5d42b843aa342bb80c2165c23e7c, type: 2}
+  - id: 1
+    color: {r: 1, g: 0.54, b: 0, a: 1}
+    material: {fileID: 2100000, guid: 7f176dd6945ba9a4bb6a12171c8a61b1, type: 2}
+  - id: 2
+    color: {r: 0.1, g: 0.76, b: 0.7, a: 1}
+    material: {fileID: 2100000, guid: e2da14ffdb86a924fb51da452dab29e1, type: 2}
+  - id: 3
+    color: {r: 0.92, g: 0.2, b: 0.22, a: 1}
+    material: {fileID: 2100000, guid: 843dfd6730408104380c127fabedb89a, type: 2}
+  - id: 4
+    color: {r: 0.3, g: 0.78, b: 0.3, a: 1}
+    material: {fileID: 2100000, guid: 4c91c9334650c264ca61153872b632a6, type: 2}
+  - id: 5
+    color: {r: 1, g: 0.85, b: 0.1, a: 1}
+    material: {fileID: 2100000, guid: d903126972428974d80292a1084086c2, type: 2}
