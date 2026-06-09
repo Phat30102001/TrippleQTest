@@ -1930,7 +1930,7 @@ MonoBehaviour:
   queueMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  holdRepeatInterval: 0.18
+  holdRepeatInterval: 0.05
   maxRayDistance: 200
 --- !u!114 &1351781838
 MonoBehaviour:

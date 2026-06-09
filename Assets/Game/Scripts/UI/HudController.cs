@@ -73,6 +73,17 @@ namespace PeopleFlow.UI
             {
                 capacityIndicator.maxValue = Mathf.Max(1, capacity);
                 capacityIndicator.value = current;
+
+                // Visual feedback: Green to Red as it fills up
+                if (capacityIndicator.fillRect != null)
+                {
+                    var fillImage = capacityIndicator.fillRect.GetComponent<UnityEngine.UI.Image>();
+                    if (fillImage != null)
+                    {
+                        float ratio = (float)current / capacityIndicator.maxValue;
+                        fillImage.color = Color.Lerp(Color.green, Color.red, ratio);
+                    }
+                }
             }
             if (capacityValueText != null)
                 capacityValueText.text = current + " / " + capacity;

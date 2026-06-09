@@ -44,13 +44,15 @@ namespace PeopleFlow.Core
         {
             EventBus.Reset();
 
-            // BuildConveyorSystems();
-            BuildMinionQueues();
-            // BuildGoalLines();
-            // BuildLockedGoalLines();
+            // 1. Initialize level controller and conveyors first
+            if (levelController != null)
+            {
+                levelController.Init(minionPrefab, palette, activeLevel);
+            }
 
-            //Todo: load level prefab from level config, use Addressables to load level prefab
-            levelController.Init(minionPrefab, palette,activeLevel);
+            // 2. Build queues that depend on conveyors
+            BuildMinionQueues();
+            
             if (gameManager != null)
             {
                 gameManager.StartSession(activeLevel.timeLimit, activeLevel.GetTotalGoalCount());

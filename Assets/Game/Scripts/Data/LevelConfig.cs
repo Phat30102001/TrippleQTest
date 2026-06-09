@@ -99,6 +99,10 @@ namespace PeopleFlow.Data
         [Tooltip("Common Z position for all minion columns.")]
         public float queueZOffset = -10f;
 
+        [Header("Global Capacity")]
+        [Tooltip("Total number of minion rows allowed on all conveyors combined.")]
+        [Min(1)] public int maxGlobalCapacityRows = 10;
+
         public List<ConveyorData> conveyors = new List<ConveyorData>();
         public List<MinionQueueData> startColumns = new List<MinionQueueData>();
         public List<GoalLineData> goalLines = new List<GoalLineData>();

@@ -341,6 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a95dab31257b2914fbf198c6e564ac63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Gameplay.Conveyor
+  startIndicatorPrefab: {fileID: 3039824712207506828, guid: a87713fa42db8e946bd40d1c608114b4, type: 3}
 --- !u!1 &8707110302096535565
 GameObject:
   m_ObjectHideFlags: 0

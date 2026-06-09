@@ -14,13 +14,12 @@ namespace PeopleFlow.Gameplay
         private ConveyorPath _path;
         private ColorPalette _palette;
         private GameObject _minionPrefab;
+        private LevelController _levelController;
 
-        private int _maxCapacityRows;
-        private int _minionsPerRow;
-        private float _rowSpacing;
-        private float _movementSpeed;
+        [SerializeField] private int _minionsPerRow = 4;
+        [SerializeField] private float _rowSpacing = 0f;
+        [SerializeField] private float _movementSpeed = 7f;
 
-        private int _currentOccupiedRows;
         private readonly List<MinionRowAgent> _activeRows = new List<MinionRowAgent>();
         private readonly List<MinionAgent> _activeMinions = new List<MinionAgent>();
 
@@ -28,31 +27,43 @@ namespace PeopleFlow.Gameplay
         public Conveyor NextConveyor { get; set; }
 
         public int CurrentOccupiedRows => _activeRows.Count;
-        public int MaxCapacityRows => _maxCapacityRows;
-        public bool IsFull => _activeRows.Count >= _maxCapacityRows;
+        public bool IsFull => _levelController != null && _levelController.IsGlobalCapacityFull;
         public IReadOnlyList<MinionAgent> ActiveMinions => _activeMinions;
 
-        public void Init(GameObject minionPrefab, ColorPalette palette)
+        [SerializeField] private GameObject startIndicatorPrefab;
+
+        public void Init(GameObject minionPrefab, ColorPalette palette, LevelController levelController)
         {
             _minionPrefab = minionPrefab;
             _palette = palette;
-            if (_path == null) _path = GetComponent<ConveyorPath>();
+            _levelController = levelController;
             
-            _maxCapacityRows = 8;
-            _minionsPerRow = 4;
-            _rowSpacing = 1.5f; // Increased for rows
-            _movementSpeed = 4.5f;
+            if (_path == null) _path = GetComponent<ConveyorPath>();
 
             _activeRows.Clear();
             _activeMinions.Clear();
-            EventBus.RaiseConveyorCapacityChanged(0, _maxCapacityRows);
+
+            SpawnIndicator();
+        }
+
+        private void SpawnIndicator()
+        {
+            if (startIndicatorPrefab != null)
+            {
+                var indicatorGo = Instantiate(startIndicatorPrefab, transform);
+                var indicator = indicatorGo.GetComponent<ConveyorIndicator>();
+                if (indicator != null) indicator.Initialize(this);
+            }
         }
 
         public void AddRowFromQueue(MinionRowAgent row)
         {
             if (IsFull) return;
 
-            float spawnDistance = -_activeRows.Count * _rowSpacing;
+            // When adding from queue, we start at distance 0 or based on occupied?
+            // User wanted rows to be stacked visually? 
+            // Actually, if it's a global capacity, we just check if full.
+            float spawnDistance = 0f; 
             row.AnimateEntry(this, spawnDistance, _movementSpeed);
             AddRowDirectly(row);
         }
@@ -67,7 +78,8 @@ namespace PeopleFlow.Gameplay
                     if (!_activeMinions.Contains(minion))
                         _activeMinions.Add(minion);
                 }
-                UpdateRowCount();
+
+                if (_levelController != null) _levelController.RegisterRowStateChanged(1);
             }
         }
 
@@ -79,31 +91,25 @@ namespace PeopleFlow.Gameplay
                 {
                     _activeMinions.Remove(minion);
                 }
-                UpdateRowCount();
+
+                if (_levelController != null) _levelController.RegisterRowStateChanged(-1);
             }
         }
 
         public void RemoveAgent(MinionAgent agent)
         {
             _activeMinions.Remove(agent);
-            // Row management is handled by MinionRowAgent when its last child is removed
-            UpdateRowCount();
+            // MinionRowAgent handles its own destruction/removal from conveyor when empty
         }
 
         private void UpdateRowCount()
         {
-            int count = _activeRows.Count;
-            if (count != _currentOccupiedRows)
-            {
-                _currentOccupiedRows = count;
-                EventBus.RaiseConveyorCapacityChanged(_currentOccupiedRows, _maxCapacityRows);
-            }
+            // Individual row count tracking moved to LevelController
         }
 
         public bool TryAddRow(MinionColor color)
         {
-            // Keeping for compatibility or manual spawns if needed
-            return false; 
+            return false;
         }
     }
 }

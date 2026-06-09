@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using PeopleFlow.Data;
+using PeopleFlow.Core;
 using UnityEngine;
 
 namespace PeopleFlow.Gameplay
@@ -10,21 +11,46 @@ namespace PeopleFlow.Gameplay
     {
         public List<Conveyor> ConveyorList;
         public GoalFactory GoalFactory;
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+        private int _maxGlobalCapacity;
+        private int _totalActiveRows;
+
+        public bool IsGlobalCapacityFull => _totalActiveRows >= _maxGlobalCapacity;
+
         public void Init(GameObject minionPrefab, ColorPalette palette, LevelConfig activeLevel)
         {
+            _maxGlobalCapacity = activeLevel.maxGlobalCapacityRows;
+            _totalActiveRows = 0;
+
             int conveyorCount = ConveyorList.Count;
 
             for (int i = 0; i < conveyorCount; i++)
             {
                 int nextConveyorIndex = (i + 1) % conveyorCount;
                 ConveyorList[i].NextConveyor = ConveyorList[nextConveyorIndex];
-                ConveyorList[i].Init(minionPrefab, palette);
+                ConveyorList[i].Init(minionPrefab, palette, this);
             }
             GoalFactory.AssignEvent(GetConveyor);
-            GoalFactory.BuildGoalLines(palette,activeLevel.goalLines);
+            GoalFactory.BuildGoalLines(palette, activeLevel.goalLines);
+            
+            UpdateGlobalCapacityUI();
         }
 
+        public void RegisterRowStateChanged(int delta)
+        {
+            _totalActiveRows += delta;
+            UpdateGlobalCapacityUI();
+            
+            if (_totalActiveRows > _maxGlobalCapacity)
+            {
+                EventBus.RaiseConveyorOverflow();
+            }
+        }
+
+        private void UpdateGlobalCapacityUI()
+        {
+            EventBus.RaiseConveyorCapacityChanged(_totalActiveRows, _maxGlobalCapacity);
+        }
 
         public Conveyor GetConveyor(int index)
         {
