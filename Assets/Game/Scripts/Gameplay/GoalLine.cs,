@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using PeopleFlow.Core;
+using PeopleFlow.Data;
+
+namespace PeopleFlow.Gameplay
+{
+    /// <summary>
+    /// Manages an ordered sequence of goal gates.
+    /// All gates in the line are visible; the front gate is colored, queued gates are grey.
+    /// </summary>
+    public class GoalLine : MonoBehaviour
+    {
+        [SerializeField] private float gateSpacing = 1.2f;
+        [SerializeField] private GameObject barrierPrefab;
+
+        public event Action<GoalLine> OnLineCleared;
+        public event Action<int> OnRemainingGatesChanged;
+
+        private readonly List<GoalGate> _gates = new List<GoalGate>();
+        private int _currentIndex;
+        private bool _isLocked;
+
+        public int RemainingCount => _gates.Count - _currentIndex;
+        public bool IsCleared => _currentIndex >= _gates.Count;
+
+        public void SetBarrierPrefab(GameObject prefab)
+        {
+            barrierPrefab = prefab;
+        }
+
+        public void Build(IList<GoalGateData> gatesData, GoalFactory factory, Conveyor conveyor, 
+                          ColorPalette palette, bool startLocked = false)
+        {
+            _isLocked = startLocked;
+            _currentIndex = 0;
+            _gates.Clear();
+
+            for (int i = 0; i < gatesData.Count; i++)
+            {
+                GoalGate gate = factory.CreateGoalGate(gatesData[i], conveyor, palette, transform);
+                
+                // Position gates in a line, centered or offset
+                // Let's offset along the local X axis
+                gate.transform.localPosition = new Vector3(i * gateSpacing, 0, 0);
+                
+                gate.OnCompleted += HandleGateCompleted;
+                
+                // Show all gates to maintain the sequence layout (active colored, others grey)
+                gate.gameObject.SetActive(true); 
+                _gates.Add(gate);
+            }
+
+            OnRemainingGatesChanged?.Invoke(RemainingCount);
+
+            if (!_isLocked && _gates.Count > 0)
+                _gates[0].Activate();
+        }
+
+        public void Unlock()
+        {
+            if (!_isLocked) return;
+            _isLocked = false;
+            if (!IsCleared)
+            {
+                _gates[_currentIndex].Activate();
+            }
+        }
+
+        private void HandleGateCompleted(GoalGate gate)
+        {
+            gate.OnCompleted -= HandleGateCompleted;
+            
+            // Hide the completed gate (or it could play an animation/close lid)
+            gate.gameObject.SetActive(false);
+
+            EventBus.RaiseGoalCompleted();
+
+            _currentIndex++;
+            OnRemainingGatesChanged?.Invoke(RemainingCount);
+
+            if (IsCleared)
+            {
+                SpawnBarrier();
+                OnLineCleared?.Invoke(this);
+                return;
+            }
+
+            if (!_isLocked)
+            {
+                _gates[_currentIndex].Activate(); // This will color the next gate
+            }
+        }
+
+        private void SpawnBarrier()
+        {
+            if (barrierPrefab == null) return;
+            var barrier = Instantiate(barrierPrefab, transform.position, transform.rotation, transform);
+            barrier.name = "Clear_Barrier";
+        }
+    }
+}
