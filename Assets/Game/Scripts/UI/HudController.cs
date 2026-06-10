@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using PeopleFlow.Core;
+using TMPro;
 
 namespace PeopleFlow.UI
 {
@@ -14,18 +15,19 @@ namespace PeopleFlow.UI
         [SerializeField] private TimerSystem timerSystem;
 
         [Header("Top Bar")]
-        [SerializeField] private Text timerText;
-        [SerializeField] private Text levelLabelText;
+        [SerializeField] private TextMeshProUGUI timerText;
+        [SerializeField] private TextMeshProUGUI levelLabelText;
         [SerializeField] private Button manualRestartButton;
 
         [Header("Capacity Indicator")]
         [SerializeField] private Slider capacityIndicator;
-        [SerializeField] private Text capacityValueText;
+        [SerializeField] private TextMeshProUGUI capacityValueText;
+        private const int MinimumCapacityValue = 1;
 
         [Header("Overlay Panels")]
         [SerializeField] private GameObject winOverlay;
         [SerializeField] private GameObject failOverlay;
-        [SerializeField] private Text failCauseText;
+        [SerializeField] private TextMeshProUGUI failCauseText;
         [SerializeField] private Button winRetryButton;
         [SerializeField] private Button failRetryButton;
 
@@ -66,28 +68,69 @@ namespace PeopleFlow.UI
             timerText.text = minutes.ToString("00") + ":" + seconds.ToString("00");
         }
 
+        // private void HandleCapacityChanged(int current, int capacity)
+        // {
+        //     // Debug.Log("Capacity changed: " + current + " / " + capacity);
+        //     if (capacityIndicator != null)
+        //     {
+        //         capacityIndicator.maxValue = Mathf.Max(1, capacity);
+        //         capacityIndicator.value = current;
+        //
+        //         // Visual feedback: Green to Red as it fills up
+        //         if (capacityIndicator.fillRect != null)
+        //         {
+        //             var fillImage = capacityIndicator.fillRect.GetComponent<UnityEngine.UI.Image>();
+        //             if (fillImage != null)
+        //             {
+        //                 float ratio = (float)current / capacityIndicator.maxValue;
+        //                 fillImage.color = Color.Lerp(Color.green, Color.red, ratio);
+        //             }
+        //         }
+        //     }
+        //     if (capacityValueText != null)
+        //         capacityValueText.text = current + " / " + capacity;
+        // }
         private void HandleCapacityChanged(int current, int capacity)
         {
-            Debug.Log("Capacity changed: " + current + " / " + capacity);
-            if (capacityIndicator != null)
-            {
-                capacityIndicator.maxValue = Mathf.Max(1, capacity);
-                capacityIndicator.value = current;
+            // Debug.Log("Capacity changed: " + current + " / " + capacity);
 
-                // Visual feedback: Green to Red as it fills up
-                if (capacityIndicator.fillRect != null)
-                {
-                    var fillImage = capacityIndicator.fillRect.GetComponent<UnityEngine.UI.Image>();
-                    if (fillImage != null)
-                    {
-                        float ratio = (float)current / capacityIndicator.maxValue;
-                        fillImage.color = Color.Lerp(Color.green, Color.red, ratio);
-                    }
-                }
-            }
-            if (capacityValueText != null)
-                capacityValueText.text = current + " / " + capacity;
+            UpdateCapacityIndicator(current, capacity);
+            UpdateCapacityValueText(current, capacity);
         }
+
+        private void UpdateCapacityIndicator(int current, int capacity)
+        {
+            if (capacityIndicator == null)
+                return;
+
+            float maxCapacityValue = Mathf.Max(MinimumCapacityValue, capacity);
+            capacityIndicator.maxValue = maxCapacityValue;
+            capacityIndicator.value = current;
+
+            UpdateCapacityFillColor(current, maxCapacityValue);
+        }
+
+        private void UpdateCapacityFillColor(int current, float maxCapacityValue)
+        {
+            if (capacityIndicator.fillRect == null)
+                return;
+
+            Image fillImage = capacityIndicator.fillRect.GetComponent<Image>();
+            if (fillImage == null)
+                return;
+
+            float fillRatio = current / maxCapacityValue;
+            fillImage.color = Color.Lerp(Color.green, Color.red, fillRatio);
+        }
+
+        private void UpdateCapacityValueText(int current, int capacity)
+        {
+            if (capacityValueText == null)
+                return;
+
+            capacityValueText.text = $"{current} / {capacity}";
+        }
+        
 
         private void HandleGameStateChanged(GameSessionState state, GameFailReason reason)
         {

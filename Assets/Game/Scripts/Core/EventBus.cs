@@ -23,13 +23,13 @@ namespace PeopleFlow.Core
         /// <summary>
         /// Clears all event subscriptions.
         /// </summary>
-        public static void Reset()
-        {
-            OnGoalCompleted = null;
-            OnConveyorOverflow = null;
-            OnLevelTimeOut = null;
-            OnAllGoalsCleared = null;
-            OnConveyorCapacityChanged = null;
-        }
+        // public static void Reset()
+        // {
+        //     OnGoalCompleted = null;
+        //     OnConveyorOverflow = null;
+        //     OnLevelTimeOut = null;
+        //     OnAllGoalsCleared = null;
+        //     OnConveyorCapacityChanged = null;
+        // }
     }
 }

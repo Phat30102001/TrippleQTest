@@ -42,7 +42,7 @@ namespace PeopleFlow.Core
 
         private void Start()
         {
-            EventBus.Reset();
+            // EventBus.Reset();
 
             // 1. Initialize level controller and conveyors first
             if (levelController != null)

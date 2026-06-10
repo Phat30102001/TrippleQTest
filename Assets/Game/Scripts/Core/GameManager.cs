@@ -78,7 +78,7 @@ namespace PeopleFlow.Core
 
         public void RestartSession()
         {
-            EventBus.Reset();
+            // EventBus.Reset();
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.name);
         }
