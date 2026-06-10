@@ -85,7 +85,7 @@ namespace PeopleFlow.EditorTools
             AssetDatabase.SaveAssets();
             EditorGUIUtility.PingObject(level);
             Selection.activeObject = level;
-            Debug.Log("Created level: " + path);
+            // Debug.Log("Created level: " + path);
         }
     }
 }

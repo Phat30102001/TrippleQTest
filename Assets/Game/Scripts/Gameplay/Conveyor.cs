@@ -58,7 +58,7 @@ namespace PeopleFlow.Gameplay
 
         public void AddRowFromQueue(MinionRowAgent row)
         {
-            if (IsFull) return;
+            // if (IsFull) return;
 
             // When adding from queue, we start at distance 0 or based on occupied?
             // User wanted rows to be stacked visually? 

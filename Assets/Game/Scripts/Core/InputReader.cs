@@ -43,7 +43,7 @@ namespace PeopleFlow.Core
                 if (_heldQueue != null)
                 {
                     bool canPush = _heldQueue.TryPushRow();
-                    Debug.Log("Can push: " + canPush);
+                    // Debug.Log("Can push: " + canPush);
                     _repeatTimer = holdRepeatInterval;
                 }
             }
@@ -54,7 +54,7 @@ namespace PeopleFlow.Core
                 if (_repeatTimer <= 0f)
                 {
                     bool canHoldPus = _heldQueue.TryPushRow();
-                    Debug.Log("Can hold push: " + canHoldPus);
+                    // Debug.Log("Can hold push: " + canHoldPus);
                     _repeatTimer = holdRepeatInterval;
                 }
             }

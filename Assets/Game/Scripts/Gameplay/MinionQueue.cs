@@ -94,7 +94,7 @@ namespace PeopleFlow.Gameplay
 
         public bool TryPushRow()
         {
-            if (IsEmpty || _conveyor == null || _conveyor.IsFull) return false;
+            if (IsEmpty || !_conveyor) return false;
 
             var row = _rowGroups.Dequeue();
             _conveyor.AddRowFromQueue(row);
