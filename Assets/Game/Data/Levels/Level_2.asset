@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 459e5281c830da34da002f5c3144af01, type: 3}
+  m_Name: Level_2
+  m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Data.LevelConfig
+  timeLimit: 180
+  queueSpacing: 2.5
+  queueZOffset: -10
+  maxGlobalCapacityRows: 15
+  conveyors: []
+  startColumns:
+  - conveyorIndex: 0
+    rows:
+    - color: 0
+      count: 8
+  - conveyorIndex: 0
+    rows:
+    - color: 4
+      count: 8
+  goalLines:
+  - position: {x: 0, y: 0.65, z: 6}
+    eulerRotation: {x: 0, y: 0, z: 0}
+    conveyorIndex: 0
+    gates:
+    - color: 0
+      count: 32
+  - position: {x: 8, y: 0.65, z: 0}
+    eulerRotation: {x: 0, y: -90, z: 0}
+    conveyorIndex: 0
+    gates:
+    - color: 4
+      count: 32
+  lockedGoalLines: []

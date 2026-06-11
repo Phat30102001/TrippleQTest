@@ -69,11 +69,11 @@ MonoBehaviour:
       TangentIn:
         x: -0
         y: -0
-        z: -0
+        z: -1.008
       TangentOut:
         x: 0
         y: 0
-        z: 0
+        z: 1.008
       Rotation:
         value:
           x: 0
@@ -103,7 +103,7 @@ MonoBehaviour:
       Tension: 0.5
     - Mode: 0
       Tension: 0.5
-    m_Closed: 1
+    m_Closed: 0
     m_IntData:
       m_Data: []
     m_FloatData:
@@ -164,6 +164,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7556489291739424518}
     - target: {fileID: 6927849545766253222, guid: a90be71a0324702498338e28a465f64e, type: 3}
+      propertyPath: m_Splines.Array.data[0].m_Closed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6927849545766253222, guid: a90be71a0324702498338e28a465f64e, type: 3}
       propertyPath: m_Splines.Array.data[0].m_Knots.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -185,7 +189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6927849545766253222, guid: a90be71a0324702498338e28a465f64e, type: 3}
       propertyPath: m_Splines.Array.data[0].m_Knots.Array.data[0].TangentIn.z
-      value: -0
+      value: -1.008
       objectReference: {fileID: 0}
     - target: {fileID: 6927849545766253222, guid: a90be71a0324702498338e28a465f64e, type: 3}
       propertyPath: m_Splines.Array.data[0].m_Knots.Array.data[1].TangentIn.z
@@ -193,7 +197,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6927849545766253222, guid: a90be71a0324702498338e28a465f64e, type: 3}
       propertyPath: m_Splines.Array.data[0].m_Knots.Array.data[0].TangentOut.z
-      value: 0
+      value: 1.008
       objectReference: {fileID: 0}
     - target: {fileID: 6927849545766253222, guid: a90be71a0324702498338e28a465f64e, type: 3}
       propertyPath: m_Splines.Array.data[0].m_Knots.Array.data[1].TangentOut.z
