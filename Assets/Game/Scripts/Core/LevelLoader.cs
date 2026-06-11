@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Splines;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace PeopleFlow.Core
     {
         [Header("Level Controller")] 
         [SerializeField] private LevelConfig activeLevel;
+        public LevelConfig GetActiveLevel() => activeLevel;
         [SerializeField] private ColorPalette palette;
         [SerializeField] private LevelController levelController;
         [SerializeField] private GoalWinCondition winCondition;
@@ -42,7 +44,7 @@ namespace PeopleFlow.Core
 
         public LevelConfig ActiveLevel => activeLevel;
 
-        public void Init()
+        public void Init(Action callback)
         {
             // EventBus.Reset();
 
@@ -59,6 +61,9 @@ namespace PeopleFlow.Core
             if (inputReader != null) inputReader.SetEnabled(true);
             if (winCondition != null) winCondition.Initialize(activeLevel.GetTotalGoalCount());
             if (timerSystem != null) timerSystem.Begin(activeLevel.timeLimit);
+            
+            callback?.Invoke();
+            
         }
 
         // private void BuildConveyorSystems()

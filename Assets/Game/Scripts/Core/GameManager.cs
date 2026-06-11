@@ -40,14 +40,26 @@ namespace PeopleFlow.Core
 
         public void Start()
         {
-            CurrentState = GameSessionState.Playing;
-            levelLoader.Init();
-            FailureReason = GameFailReason.None;
+            CurrentState = GameSessionState.Loading;
+            // OnGameStateChanged?.Invoke(CurrentState, new object[]
+            // {
+
+            OnGameStateChanged?.Invoke(CurrentState, new object[]
+            {
+                (Action<Action>) ((callback)=>
+                {
+                    levelLoader.Init(callback);
+                }),
+                (Action<Action>)((callback) => {
+                    CurrentState = GameSessionState.Playing;
+                    FailureReason = GameFailReason.None;
+                    OnGameStateChanged?.Invoke(CurrentState, new object[] { levelLoader.GetActiveLevel() });
+                    callback?.Invoke();
+                }),
+                null
+            });
             
 
-
-            
-            OnGameStateChanged?.Invoke(CurrentState, null);
         }
         // public void StartSession(float timeLimit, int goalCount)
         // {

@@ -52,8 +52,8 @@ namespace PeopleFlow.UI
             var ui = GetUI<T>();
             if (ui != null)
             {
-                ui.SetData(data);
                 ui.Show();
+                ui.SetData(data);
             }
         }
 
