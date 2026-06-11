@@ -13,12 +13,14 @@ namespace PeopleFlow.Core
         public static event Action OnLevelTimeOut;
         public static event Action OnAllGoalsCleared;
         public static event Action<int, int> OnConveyorCapacityChanged;
+        public static event Action OnRequestRetry;
 
         public static void RaiseGoalCompleted() => OnGoalCompleted?.Invoke();
         public static void RaiseConveyorOverflow() => OnConveyorOverflow?.Invoke();
         public static void RaiseLevelTimeOut() => OnLevelTimeOut?.Invoke();
         public static void RaiseAllGoalsCleared() => OnAllGoalsCleared?.Invoke();
         public static void RaiseConveyorCapacityChanged(int current, int capacity) => OnConveyorCapacityChanged?.Invoke(current, capacity);
+        public static void RaiseRequestRetry() => OnRequestRetry?.Invoke();
 
         /// <summary>
         /// Clears all event subscriptions.

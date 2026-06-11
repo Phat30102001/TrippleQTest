@@ -4,28 +4,28 @@ using UnityEngine.SceneManagement;
 
 namespace PeopleFlow.Core
 {
-    public enum GameSessionState { Loading, Playing, Won, Failed }
-    public enum GameFailReason { None, TimeExpired, ConveyorOverflow }
+
 
     /// <summary>
     /// Manages the high-level game state and transitions.
     /// </summary>
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private TimerSystem timerSystem;
-        [SerializeField] private GoalWinCondition winCondition;
-        [SerializeField] private InputReader inputReader;
 
-        public event Action<GameSessionState, GameFailReason> OnGameStateChanged;
+
+
+        [SerializeField] private LevelLoader levelLoader;
+        public event Action<GameSessionState, object[]> OnGameStateChanged;
 
         public GameSessionState CurrentState { get; private set; } = GameSessionState.Loading;
-        public GameFailReason FailureReason { get; private set; } = GameFailReason.None;
+        public string FailureReason { get; private set; } = GameFailReason.None;
 
         private void OnEnable()
         {
             EventBus.OnConveyorOverflow += HandleOverflow;
             EventBus.OnLevelTimeOut += HandleTimeOut;
             EventBus.OnAllGoalsCleared += HandleAllCleared;
+            EventBus.OnRequestRetry += HandleRetryRequest;
         }
 
         private void OnDisable()
@@ -33,19 +33,34 @@ namespace PeopleFlow.Core
             EventBus.OnConveyorOverflow -= HandleOverflow;
             EventBus.OnLevelTimeOut -= HandleTimeOut;
             EventBus.OnAllGoalsCleared -= HandleAllCleared;
+            EventBus.OnRequestRetry -= HandleRetryRequest;
         }
 
-        public void StartSession(float timeLimit, int goalCount)
+        private void HandleRetryRequest() => RestartSession();
+
+        public void Start()
         {
             CurrentState = GameSessionState.Playing;
+            levelLoader.Init();
             FailureReason = GameFailReason.None;
             
-            if (winCondition != null) winCondition.Initialize(goalCount);
-            if (timerSystem != null) timerSystem.Begin(timeLimit);
-            if (inputReader != null) inputReader.SetEnabled(true);
+
+
             
-            OnGameStateChanged?.Invoke(CurrentState, FailureReason);
+            OnGameStateChanged?.Invoke(CurrentState, null);
         }
+        // public void StartSession(float timeLimit, int goalCount)
+        // {
+        //     CurrentState = GameSessionState.Playing;
+        //     levelLoader.Init();
+        //     FailureReason = GameFailReason.None;
+        //     
+        //     if (winCondition != null) winCondition.Initialize(goalCount);
+        //     if (timerSystem != null) timerSystem.Begin(timeLimit);
+        //     if (inputReader != null) inputReader.SetEnabled(true);
+        //     
+        //     OnGameStateChanged?.Invoke(CurrentState, null);
+        // }
 
         private void HandleOverflow() => FailSession(GameFailReason.ConveyorOverflow);
         private void HandleTimeOut() => FailSession(GameFailReason.TimeExpired);
@@ -57,30 +72,32 @@ namespace PeopleFlow.Core
             
             CurrentState = GameSessionState.Won;
             EndSession();
-            OnGameStateChanged?.Invoke(CurrentState, FailureReason);
+            OnGameStateChanged?.Invoke(CurrentState, null);
         }
 
-        public void FailSession(GameFailReason reason)
+        public void FailSession(string loseReason)
         {
             if (CurrentState != GameSessionState.Playing) return;
             
             CurrentState = GameSessionState.Failed;
-            FailureReason = reason;
+            FailureReason = loseReason;
             EndSession();
-            OnGameStateChanged?.Invoke(CurrentState, FailureReason);
+
+            OnGameStateChanged?.Invoke(CurrentState, new []{loseReason});
         }
 
         private void EndSession()
         {
-            if (timerSystem != null) timerSystem.Stop();
-            if (inputReader != null) inputReader.SetEnabled(false);
+            levelLoader.EndLevel();
         }
 
         public void RestartSession()
         {
             // EventBus.Reset();
-            Scene currentScene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(currentScene.name);
+            // Scene currentScene = SceneManager.GetActiveScene();
+            // SceneManager.LoadScene(currentScene.name);
+            levelLoader.ResetLevel();
+            
         }
     }
 }

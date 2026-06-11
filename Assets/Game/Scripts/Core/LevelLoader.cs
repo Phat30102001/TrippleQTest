@@ -12,11 +12,13 @@ namespace PeopleFlow.Core
     /// </summary>
     public class LevelLoader : MonoBehaviour
     {
-        [Header("Level Controller")] [SerializeField]
-        private LevelConfig activeLevel;
-
+        [Header("Level Controller")] 
+        [SerializeField] private LevelConfig activeLevel;
         [SerializeField] private ColorPalette palette;
         [SerializeField] private LevelController levelController;
+        [SerializeField] private GoalWinCondition winCondition;
+        [SerializeField] private TimerSystem timerSystem;
+        [SerializeField] private InputReader inputReader;
 
         [Header("Gameplay Prefabs")] [SerializeField]
         private GameObject minionPrefab;
@@ -40,7 +42,7 @@ namespace PeopleFlow.Core
 
         public LevelConfig ActiveLevel => activeLevel;
 
-        private void Start()
+        public void Init()
         {
             // EventBus.Reset();
 
@@ -53,10 +55,10 @@ namespace PeopleFlow.Core
             // 2. Build queues that depend on conveyors
             BuildMinionQueues();
             
-            if (gameManager != null)
-            {
-                gameManager.StartSession(activeLevel.timeLimit, activeLevel.GetTotalGoalCount());
-            }
+
+            if (inputReader != null) inputReader.SetEnabled(true);
+            if (winCondition != null) winCondition.Initialize(activeLevel.GetTotalGoalCount());
+            if (timerSystem != null) timerSystem.Begin(activeLevel.timeLimit);
         }
 
         // private void BuildConveyorSystems()
@@ -157,7 +159,15 @@ namespace PeopleFlow.Core
         //         controller.Initialize(data.unlockCounter);
         //     }
         // }
-
+        public void ResetLevel()
+        {
+            
+        }
+        public void EndLevel()
+        {
+            if (timerSystem != null) timerSystem.Stop();
+            if (inputReader != null) inputReader.SetEnabled(false);
+        }
 
     }
 }
