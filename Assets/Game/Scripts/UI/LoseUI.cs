@@ -40,6 +40,7 @@ namespace PeopleFlow.UI
 
         private void OnRetryRequested()
         {
+            Hide();                                     
             EventBus.RaiseRequestRetry();
         }
     }
