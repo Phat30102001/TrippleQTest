@@ -161,7 +161,7 @@ namespace PeopleFlow.Gameplay
             
             IsLeaving = true;
             IsFollowingRow = false;
-            transform.SetParent(null);
+            // transform.SetParent(null);
 
             _view.PlayJump();
             StartCoroutine(PerformJumpToHole(targetHolePosition));
@@ -192,12 +192,14 @@ namespace PeopleFlow.Gameplay
             }
 
             OnRemoved?.Invoke(this);
-            
-            if (PrefabOrigin != null && PoolManager.Instance != null)
-                PoolManager.Instance.Return(PrefabOrigin, gameObject);
-            else
-                Destroy(gameObject);
+            //
+            // if (PrefabOrigin != null && PoolManager.Instance != null)
+            //     PoolManager.Instance.Return(PrefabOrigin, gameObject);
+            // else
+                // Destroy(gameObject);
+                gameObject.SetActive(false);
         }
+        
 
         public void PlayJumpAnimation() => _view.PlayJump();
         public UnityEngine.Color GetDisplayColor() => _view != null ? UnityEngine.Color.white : UnityEngine.Color.white; // Simplified

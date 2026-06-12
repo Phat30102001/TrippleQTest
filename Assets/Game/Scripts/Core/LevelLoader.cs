@@ -26,7 +26,7 @@ namespace PeopleFlow.Core
         private GameObject minionPrefab;
 
         [SerializeField] private GameObject goalGatePrefab;
-        [SerializeField] private GameObject minionQueuePrefab;
+        [SerializeField] private MinionQueue minionQueuePrefab;
         [SerializeField] private GameObject goalContainerPrefab;
         [SerializeField] private GameObject clearBarrierPrefab;
 
@@ -37,8 +37,10 @@ namespace PeopleFlow.Core
         // [SerializeField] private GameObject conveyorRoot;
 
         [SerializeField] private GameObject queueRoot;
-        [SerializeField] private GameObject goalRoot;
+        // [SerializeField] private GameObject goalRoot;
         [SerializeField] private GameObject lockedGoalRoot;
+        [Header("Minion Queue")]
+        [SerializeField] private List<MinionQueue> minionQueues = new List<MinionQueue>();
 
         // private readonly List<Conveyor> _conveyors = new List<Conveyor>();
 
@@ -102,24 +104,43 @@ namespace PeopleFlow.Core
         {
             Transform parent = queueRoot != null ? queueRoot.transform : transform;
             int count = activeLevel.startColumns.Count;
-            if (count == 0) return;
 
+            if (count > minionQueues.Count)
+            {
+                // instantiate more
+                int unspawnAmount = count - minionQueues.Count;
+                for (int i = 0; i < unspawnAmount; i++)
+                {
+                    var queueGo = Instantiate(minionQueuePrefab, Vector3.zero, Quaternion.identity, parent);
+                    minionQueues.Add(queueGo.GetComponent<MinionQueue>());
+                }
+            }
             float spacing = activeLevel.queueSpacing;
             float totalWidth = (count - 1) * spacing;
             float startX = -totalWidth * 0.5f;
-
             for (int i = 0; i < count; i++)
             {
                 var data = activeLevel.startColumns[i];
                 Vector3 autoPos = new Vector3(startX + i * spacing, 0, activeLevel.queueZOffset);
-
-                var queueGo = Instantiate(minionQueuePrefab, autoPos, Quaternion.identity, parent);
-                queueGo.name = $"Minion_Queue_{i}";
-
-                var queue = queueGo.GetComponent<MinionQueue>();
+                minionQueues[i].transform.position = autoPos;
+                minionQueues[i].gameObject.SetActive(true);
                 var targetConveyor = levelController.GetConveyor(data.conveyorIndex);
-                queue.Initialize(data, targetConveyor, minionPrefab, palette);
+                minionQueues[i].Initialize(data, targetConveyor, palette);
+                
             }
+
+            // for (int i = 0; i < count; i++)
+            // {
+            //     var data = activeLevel.startColumns[i];
+            //     Vector3 autoPos = new Vector3(startX + i * spacing, 0, activeLevel.queueZOffset);
+            //
+            //     
+            //     var queueGo = Instantiate(minionQueuePrefab, autoPos, Quaternion.identity, parent);
+            //     var queue = queueGo;
+            //     var targetConveyor = levelController.GetConveyor(data.conveyorIndex);
+            //     queue.Initialize(data, targetConveyor, minionPrefab, palette);
+            //     minionQueues.Add(queue);
+            // }
         }
 
         // private void BuildGoalLines()
@@ -164,14 +185,20 @@ namespace PeopleFlow.Core
         //         controller.Initialize(data.unlockCounter);
         //     }
         // }
-        public void ResetLevel()
+        public void ResetLevel(Action callback)
         {
-            
+            EndLevel();
+            Init(callback);
         }
         public void EndLevel()
         {
             if (timerSystem != null) timerSystem.Stop();
             if (inputReader != null) inputReader.SetEnabled(false);
+            levelController.EndLevel();
+            foreach (var queue in minionQueues)
+            {
+                queue.gameObject.SetActive(false);
+            }
         }
 
     }

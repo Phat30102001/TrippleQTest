@@ -142,6 +142,7 @@ MonoBehaviour:
   _minionsPerRow: 4
   _rowSpacing: 0
   _movementSpeed: 7
+  _activeRows: []
   startIndicatorPrefab: {fileID: 3039824712207506828, guid: a87713fa42db8e946bd40d1c608114b4, type: 3}
 --- !u!1001 &5570830280041763752
 PrefabInstance:

@@ -40,26 +40,28 @@ namespace PeopleFlow.Core
 
         public void Start()
         {
+            LoadingTransition((callback => { levelLoader.Init(callback); }), ((callback) =>
+                {
+                    CurrentState = GameSessionState.Playing;
+                    FailureReason = GameFailReason.None;
+                    OnGameStateChanged?.Invoke(CurrentState, new object[] { levelLoader.GetActiveLevel() });
+                    callback?.Invoke();
+                }),
+                null);
+        }
+
+        private void LoadingTransition(Action<Action> onInitComplete, Action<Action> onPreLoad, Action onFinished)
+        {
             CurrentState = GameSessionState.Loading;
             // OnGameStateChanged?.Invoke(CurrentState, new object[]
             // {
 
             OnGameStateChanged?.Invoke(CurrentState, new object[]
             {
-                (Action<Action>) ((callback)=>
-                {
-                    levelLoader.Init(callback);
-                }),
-                (Action<Action>)((callback) => {
-                    CurrentState = GameSessionState.Playing;
-                    FailureReason = GameFailReason.None;
-                    OnGameStateChanged?.Invoke(CurrentState, new object[] { levelLoader.GetActiveLevel() });
-                    callback?.Invoke();
-                }),
-                null
+                onInitComplete,
+                onPreLoad,
+                onFinished
             });
-            
-
         }
         // public void StartSession(float timeLimit, int goalCount)
         // {
@@ -81,7 +83,7 @@ namespace PeopleFlow.Core
         public void WinSession()
         {
             if (CurrentState != GameSessionState.Playing) return;
-            
+
             CurrentState = GameSessionState.Won;
             EndSession();
             OnGameStateChanged?.Invoke(CurrentState, null);
@@ -90,12 +92,12 @@ namespace PeopleFlow.Core
         public void FailSession(string loseReason)
         {
             if (CurrentState != GameSessionState.Playing) return;
-            
+
             CurrentState = GameSessionState.Failed;
             FailureReason = loseReason;
             EndSession();
 
-            OnGameStateChanged?.Invoke(CurrentState, new []{loseReason});
+            OnGameStateChanged?.Invoke(CurrentState, new[] { loseReason });
         }
 
         private void EndSession()
@@ -108,8 +110,23 @@ namespace PeopleFlow.Core
             // EventBus.Reset();
             // Scene currentScene = SceneManager.GetActiveScene();
             // SceneManager.LoadScene(currentScene.name);
-            levelLoader.ResetLevel();
-            
+            LoadingTransition(
+                callback =>
+                {
+                    EventBus.RaisePauseGame(true);
+                    levelLoader.ResetLevel(callback);
+                }, 
+                callback =>
+                {
+                    CurrentState = GameSessionState.Playing;
+                    FailureReason = GameFailReason.None;
+                    OnGameStateChanged?.Invoke(CurrentState, new object[] { levelLoader.GetActiveLevel() });
+                    callback?.Invoke();
+                }, () =>
+                {
+                    EventBus.RaisePauseGame(false);
+                });
+
         }
     }
 }

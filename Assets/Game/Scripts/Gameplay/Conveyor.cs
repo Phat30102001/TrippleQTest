@@ -20,7 +20,7 @@ namespace PeopleFlow.Gameplay
         [SerializeField] private float _rowSpacing = 0f;
         [SerializeField] private float _movementSpeed = 7f;
 
-        private readonly List<MinionRowAgent> _activeRows = new List<MinionRowAgent>();
+        [SerializeField] private List<MinionRowAgent> _activeRows = new List<MinionRowAgent>();
         private readonly List<MinionAgent> _activeMinions = new List<MinionAgent>();
 
         public ConveyorPath Path => _path;
@@ -37,7 +37,7 @@ namespace PeopleFlow.Gameplay
             _minionPrefab = minionPrefab;
             _palette = palette;
             _levelController = levelController;
-            
+
             if (_path == null) _path = GetComponent<ConveyorPath>();
 
             _activeRows.Clear();
@@ -63,7 +63,7 @@ namespace PeopleFlow.Gameplay
             // When adding from queue, we start at distance 0 or based on occupied?
             // User wanted rows to be stacked visually? 
             // Actually, if it's a global capacity, we just check if full.
-            float spawnDistance = 0f; 
+            float spawnDistance = 0f;
             row.AnimateEntry(this, spawnDistance, _movementSpeed);
             AddRowDirectly(row);
         }
@@ -96,20 +96,37 @@ namespace PeopleFlow.Gameplay
             }
         }
 
+        public void RemoveAllRows()
+        {
+            while (_activeRows.Count > 0)
+            {
+                var row = _activeRows[0];
+                if (_activeRows.Remove(row))
+                {
+                    foreach (var minion in row.Minions)
+                    {
+                        _activeMinions.Remove(minion);
+                    }
+
+                    PoolManager.Instance.Deposit(row);
+                    row.gameObject.SetActive(false);
+
+                    if (_levelController != null) _levelController.RegisterRowStateChanged(-1);
+                }
+                
+            }
+        }
+
         public void RemoveAgent(MinionAgent agent)
         {
             _activeMinions.Remove(agent);
             // MinionRowAgent handles its own destruction/removal from conveyor when empty
         }
 
-        private void UpdateRowCount()
+        public void Clear()
         {
-            // Individual row count tracking moved to LevelController
-        }
-
-        public bool TryAddRow(MinionColor color)
-        {
-            return false;
+            // remove all row
+            RemoveAllRows();
         }
     }
 }

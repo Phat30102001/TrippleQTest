@@ -30,9 +30,10 @@ namespace PeopleFlow.Gameplay
                 ConveyorList[i].NextConveyor = ConveyorList[nextConveyorIndex];
                 ConveyorList[i].Init(minionPrefab, palette, this);
             }
+
             GoalFactory.AssignEvent(GetConveyor);
             GoalFactory.BuildGoalLines(palette, activeLevel.goalLines);
-            
+
             UpdateGlobalCapacityUI();
         }
 
@@ -40,7 +41,7 @@ namespace PeopleFlow.Gameplay
         {
             _totalActiveRows += delta;
             UpdateGlobalCapacityUI();
-            
+
             if (_totalActiveRows > _maxGlobalCapacity)
             {
                 EventBus.RaiseConveyorOverflow();
@@ -57,25 +58,14 @@ namespace PeopleFlow.Gameplay
             if (index >= 0 && index < ConveyorList.Count) return ConveyorList[index];
             return ConveyorList.Count > 0 ? ConveyorList[0] : null;
         }
-        // private void BuildGoalLines()
-        // {
-        //     Transform parent = goalRoot != null ? goalRoot.transform : transform;
-        //     foreach (var data in activeLevel.goalLines)
-        //     {
-        //         var container = Instantiate(goalContainerPrefab, data.position, Quaternion.Euler(data.eulerRotation),
-        //             parent);
-        //         container.name = "Goal_Line_Container";
-        //
-        //         var factory = container.AddComponent<GoalFactory>();
-        //         // factory.GoalGatePrefab = goalGatePrefab;
-        //
-        //         var line = container.AddComponent<GoalLine>();
-        //         line.SetBarrierPrefab(clearBarrierPrefab);
-        //
-        //         var targetConveyor = levelController.GetConveyor(data.conveyorIndex);
-        //         line.Build(data.gates, factory, targetConveyor, palette, false);
-        //     }
-        // }
+
+        public void EndLevel()
+        {
+            foreach (var conveyor in ConveyorList)
+            {
+                conveyor.Clear();
+            }
+        }
     }
-    
+
 }

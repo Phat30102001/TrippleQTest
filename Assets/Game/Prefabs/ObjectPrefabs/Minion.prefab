@@ -74,6 +74,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 47f29775315c7104781191dbd93cdf25, type: 3}
       insertIndex: -1
       addedObject: {fileID: 767952367171366246}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 47f29775315c7104781191dbd93cdf25, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6274588902902747852}
   m_SourcePrefab: {fileID: 100100000, guid: 47f29775315c7104781191dbd93cdf25, type: 3}
 --- !u!1 &1941994536742213865 stripped
 GameObject:
@@ -114,5 +117,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134714be68ac7d45a2a5a7b7ad65c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Gameplay.MinionView
-  minionAnimator: {fileID: 0}
+  minionAnimator: {fileID: 8556471177457465568}
   colorableRenderers: []
+--- !u!114 &6274588902902747852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1941994536742213865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b97c1e42619774e428ae98133125666b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Gameplay.MinionAgent

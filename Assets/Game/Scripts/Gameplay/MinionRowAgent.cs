@@ -23,41 +23,60 @@ namespace PeopleFlow.Gameplay
         public float Distance => _currentDistance;
         public bool IsEntering => _isEntering;
         public GameObject RowPrefabOrigin { get; set; }
-
-        public void Initialize(MinionColor color)
+        private bool _isPaused=false;
+        private int activeMinionsCount=0;
+        public void SetData(MinionColor color)
         {
             RowColor = color;
             _minions.Clear();
             _isEntering = false;
             _conveyor = null;
+            gameObject.SetActive(true);
+        }
+
+        private void OnEnable()
+        {
+            EventBus.OnPauseGame += HandlePauseGame;
+        }
+
+        private void OnDisable()
+        {
+            EventBus.OnPauseGame -= HandlePauseGame;
+        }
+
+        private void HandlePauseGame(bool isPaused)
+        {
+            _isPaused = isPaused;
         }
 
         public void AddMinion(MinionAgent agent)
         {
+            activeMinionsCount++;
             _minions.Add(agent);
             agent.transform.SetParent(transform);
             agent.IsFollowingRow = true;
             agent.OnRemoved += HandleMinionRemoved;
         }
-
+        
         private void HandleMinionRemoved(MinionAgent agent)
         {
-            _minions.Remove(agent);
+            // _minions.Remove(agent);
             agent.OnRemoved -= HandleMinionRemoved;
-            
-            if (_minions.Count == 0)
+            activeMinionsCount--;
+            if (activeMinionsCount <= 0)
             {
                 // All minions in this row are gone
                 if (_conveyor != null) _conveyor.RemoveRow(this);
                 
                 if (RowPrefabOrigin != null && PoolManager.Instance != null)
                 {
-                    PoolManager.Instance.Return(RowPrefabOrigin, gameObject);
+                    // PoolManager.Instance.Return(RowPrefabOrigin, gameObject);
+                    PoolManager.Instance.Deposit(this);
                 }
-                else
-                {
+                // else
+                // {
                     gameObject.SetActive(false); 
-                }
+                // }
             }
         }
 
@@ -123,6 +142,8 @@ namespace PeopleFlow.Gameplay
 
         private void Update()
         {
+            Debug.Log($"Update {_isPaused}" );
+            if (_isPaused) return;
             if (_isEntering || _conveyor == null || _moveSpeed < 0.001f) return;
             
             _currentDistance += _moveSpeed * Time.deltaTime;
@@ -152,8 +173,8 @@ namespace PeopleFlow.Gameplay
         {
             if (_conveyor == null || _conveyor.Path == null) return;
             
-            transform.position = _conveyor.Path.EvaluatePosition(_currentDistance);
-            Vector3 direction = _conveyor.Path.EvaluateDirection(_currentDistance);
+            transform.position = _conveyor.Path.EvaluatePosition(_isPaused||activeMinionsCount<=0?0: _currentDistance);
+            Vector3 direction = _conveyor.Path.EvaluateDirection(_isPaused||activeMinionsCount<=0?0: _currentDistance);
             if (direction.sqrMagnitude > 0.0001f)
                 transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
         }
