@@ -142,7 +142,6 @@ namespace PeopleFlow.Gameplay
 
         private void Update()
         {
-            Debug.Log($"Update {_isPaused}" );
             if (_isPaused) return;
             if (_isEntering || _conveyor == null || _moveSpeed < 0.001f) return;
             

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace PeopleFlow.Core
@@ -7,14 +8,18 @@ namespace PeopleFlow.Core
     /// </summary>
     public class GoalWinCondition : MonoBehaviour
     {
-        private int _goalsRemaining;
+       [SerializeField] private int _goalsRemaining;
         private bool _isSatisfied;
 
-        public void Initialize(int totalGoals)
+        public void SetData(int totalGoals)
         {
             _goalsRemaining = Mathf.Max(0, totalGoals);
             _isSatisfied = (_goalsRemaining == 0);
             
+        }
+
+        private void Start()
+        {
             EventBus.OnGoalCompleted += HandleGoalCompleted;
         }
 

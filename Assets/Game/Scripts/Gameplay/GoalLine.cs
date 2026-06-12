@@ -21,8 +21,8 @@ namespace PeopleFlow.Gameplay
         [Header("Goal count")]
         [SerializeField] private TextMeshPro countLabel;
         
-        public event Action<GoalLine> OnLineCleared;
-        public event Action<int> OnRemainingGatesChanged;
+        // public event Action<GoalLine> OnLineCleared;
+        // public event Action<int> OnRemainingGatesChanged;
 
         private IList<GoalGateData> _gatesData;
         private int _currentIndex;
@@ -66,7 +66,7 @@ namespace PeopleFlow.Gameplay
                 if (nextGate != null) nextGate.gameObject.SetActive(false);
                 
                 SpawnBarrier();
-                OnLineCleared?.Invoke(this);
+                // OnLineCleared?.Invoke(this);
                 return;
             }
 
@@ -84,7 +84,7 @@ namespace PeopleFlow.Gameplay
                 if (nextGate != null) nextGate.gameObject.SetActive(false);
             }
 
-            OnRemainingGatesChanged?.Invoke(RemainingCount);
+            // OnRemainingGatesChanged?.Invoke(RemainingCount);
         }
 
         private void SetupGate(GoalGate gate, GoalGateData data, bool activate)

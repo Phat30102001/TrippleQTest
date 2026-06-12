@@ -61,7 +61,7 @@ namespace PeopleFlow.Core
             
 
             if (inputReader != null) inputReader.SetEnabled(true);
-            if (winCondition != null) winCondition.Initialize(activeLevel.GetTotalGoalCount());
+            if (winCondition != null) winCondition.SetData(activeLevel.GetTotalGoalCount());
             if (timerSystem != null) timerSystem.Begin(activeLevel.timeLimit);
             
             callback?.Invoke();
