@@ -99,7 +99,7 @@ namespace PeopleFlow.Gameplay
                         //     agent = minionGo.AddComponent<MinionAgent>();
 
                         minionList[j].PrefabOrigin = minionPrefab.gameObject;
-                        minionList[j].Initialize(null, 0, 0, rowData.color, _palette.GetColor(rowData.color));
+                        minionList[j].SetData(null, 0, 0, rowData.color, _palette.GetColor(rowData.color));
 
                         // Ensure minion is correctly positioned locally within the row
                         minionList[j].transform.localPosition = minionLocalPos;
