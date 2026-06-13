@@ -23,7 +23,7 @@ namespace PeopleFlow.UI
             if (winRetryButton != null)
             {
                 winRetryButton.onClick.RemoveAllListeners();
-                winRetryButton.onClick.AddListener(OnRetryRequested);
+                winRetryButton.onClick.AddListener(OnMovingToNextLevel);
             }
         }
 
@@ -32,10 +32,10 @@ namespace PeopleFlow.UI
             // Optional: Handle win data if needed
         }
 
-        private void OnRetryRequested()
+        private void OnMovingToNextLevel()
         {
             Hide();
-            EventBus.RaiseRequestRetry();
+            EventBus.RaiseMovingToNextLevel();
         }
     }
 }

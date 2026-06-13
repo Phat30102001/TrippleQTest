@@ -16,10 +16,10 @@ namespace PeopleFlow.Gameplay
         private int _totalActiveRows;
 
         public bool IsGlobalCapacityFull => _totalActiveRows >= _maxGlobalCapacity;
-
-        public void Init(GameObject minionPrefab, ColorPalette palette, LevelConfig activeLevel)
+        private ColorPalette _palette;
+        public void Init(GameObject minionPrefab, ColorPalette palette)
         {
-            _maxGlobalCapacity = activeLevel.maxGlobalCapacityRows;
+            _palette = palette;
             _totalActiveRows = 0;
 
             int conveyorCount = ConveyorList.Count;
@@ -32,9 +32,15 @@ namespace PeopleFlow.Gameplay
             }
 
             GoalFactory.AssignEvent(GetConveyor);
-            GoalFactory.BuildGoalLines(palette, activeLevel.goalLines);
+
 
             UpdateGlobalCapacityUI();
+        }
+
+        public void SetData(LevelConfig activeLevel)
+        {
+            _maxGlobalCapacity = activeLevel.maxGlobalCapacityRows;
+            GoalFactory.BuildGoalLines(_palette, activeLevel.goalLines);
         }
 
         public void RegisterRowStateChanged(int delta)

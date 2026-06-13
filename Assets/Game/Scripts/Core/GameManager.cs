@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using PeopleFlow.Data;
 namespace PeopleFlow.Core
 {
 
@@ -15,6 +15,9 @@ namespace PeopleFlow.Core
 
 
         [SerializeField] private LevelLoader levelLoader;
+        [SerializeField] private LevelListSO levelList;
+        [SerializeField] private int startLevelIndex = 0;
+        private int _currentLevelIndex;
         public event Action<GameSessionState, object[]> OnGameStateChanged;
 
         public GameSessionState CurrentState { get; private set; } = GameSessionState.Loading;
@@ -26,6 +29,7 @@ namespace PeopleFlow.Core
             EventBus.OnLevelTimeOut += HandleTimeOut;
             EventBus.OnAllGoalsCleared += HandleAllCleared;
             EventBus.OnRequestRetry += HandleRetryRequest;
+            EventBus.OnMovingToNextLevel += HandleMovingToNextLevel;
         }
 
         private void OnDisable()
@@ -34,13 +38,26 @@ namespace PeopleFlow.Core
             EventBus.OnLevelTimeOut -= HandleTimeOut;
             EventBus.OnAllGoalsCleared -= HandleAllCleared;
             EventBus.OnRequestRetry -= HandleRetryRequest;
+            EventBus.OnMovingToNextLevel -= HandleMovingToNextLevel;
         }
 
         private void HandleRetryRequest() => RestartSession();
 
         public void Start()
         {
-            LoadingTransition((callback => { levelLoader.Init(callback); }), ((callback) =>
+            _currentLevelIndex= startLevelIndex;
+            HandleTransitionToGameplay();
+        }
+        private void HandleMovingToNextLevel()
+        {
+            _currentLevelIndex++;
+            HandleTransitionToGameplay();
+        }
+
+        private void HandleTransitionToGameplay()
+        {
+            var levelData= levelList.GetLevel(_currentLevelIndex);
+            LoadingTransition((callback => { levelLoader.SetData(_currentLevelIndex,levelData,callback); }), ((callback) =>
                 {
                     CurrentState = GameSessionState.Playing;
                     FailureReason = GameFailReason.None;
@@ -49,6 +66,7 @@ namespace PeopleFlow.Core
                 }),
                 null);
         }
+
 
         private void LoadingTransition(Action<Action> onInitComplete, Action<Action> onPreLoad, Action onFinished)
         {

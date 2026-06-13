@@ -45,15 +45,27 @@ namespace PeopleFlow.Core
         // private readonly List<Conveyor> _conveyors = new List<Conveyor>();
 
         public LevelConfig ActiveLevel => activeLevel;
-
-        public void Init(Action callback)
+        private LevelSO _cachedLevelData;
+        private int _levelIndex=-1;
+        
+        public void SetData(int levelIndex,LevelSO levelData,Action callback)
         {
-            // EventBus.Reset();
-
-            // 1. Initialize level controller and conveyors first
+            if (_levelIndex != levelIndex)
+            {
+                // destroy old level
+                if (levelController != null)
+                {
+                    Destroy(levelController.gameObject);
+                }
+                BuildLevel(levelData.LevelController);
+                _levelIndex = levelIndex;
+                _cachedLevelData = levelData;
+                activeLevel = _cachedLevelData.LevelConfig;
+            }
+            // 1. Set data level controller and conveyors
             if (levelController != null)
             {
-                levelController.Init(minionPrefab, palette, activeLevel);
+                levelController.SetData( activeLevel);
             }
 
             // 2. Build queues that depend on conveyors
@@ -66,6 +78,13 @@ namespace PeopleFlow.Core
             
             callback?.Invoke();
             
+        }
+
+        private void BuildLevel(LevelController levelMap)
+        {
+            var map= Instantiate(levelMap,Vector3.zero,Quaternion.identity, transform);
+            levelController = map;
+            levelController.Init(minionPrefab, palette);
         }
 
         // private void BuildConveyorSystems()
@@ -188,7 +207,7 @@ namespace PeopleFlow.Core
         public void ResetLevel(Action callback)
         {
             EndLevel();
-            Init(callback);
+            SetData(_levelIndex,_cachedLevelData,callback);
         }
         public void EndLevel()
         {

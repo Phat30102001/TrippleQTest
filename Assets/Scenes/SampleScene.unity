@@ -2498,6 +2498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Core.GameManager
   levelLoader: {fileID: 818724597}
+  levelList: {fileID: 11400000, guid: bbbb6a368e18956479cea2db4423c4ad, type: 2}
 --- !u!114 &1351781836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2556,6 +2557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c01f70b3f5036e145ae67630a72d3b41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Core.GoalWinCondition
+  _goalsRemaining: 0
 --- !u!1 &1479379927
 GameObject:
   m_ObjectHideFlags: 0
