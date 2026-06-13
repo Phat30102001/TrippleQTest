@@ -12,8 +12,7 @@ namespace PeopleFlow.Gameplay
     public class Conveyor : MonoBehaviour
     {
         private ConveyorPath _path;
-        private ColorPalette _palette;
-        private GameObject _minionPrefab;
+
         private LevelController _levelController;
 
         [SerializeField] private int _minionsPerRow = 4;
@@ -30,12 +29,10 @@ namespace PeopleFlow.Gameplay
         public bool IsFull => _levelController != null && _levelController.IsGlobalCapacityFull;
         public IReadOnlyList<MinionAgent> ActiveMinions => _activeMinions;
 
-        [SerializeField] private GameObject startIndicatorPrefab;
 
-        public void Init(GameObject minionPrefab, ColorPalette palette, LevelController levelController)
+
+        public void Init( LevelController levelController)
         {
-            _minionPrefab = minionPrefab;
-            _palette = palette;
             _levelController = levelController;
 
             if (_path == null) _path = GetComponent<ConveyorPath>();
@@ -43,18 +40,19 @@ namespace PeopleFlow.Gameplay
             _activeRows.Clear();
             _activeMinions.Clear();
 
-            SpawnIndicator();
+            // SpawnIndicator();
+
         }
 
-        private void SpawnIndicator()
-        {
-            if (startIndicatorPrefab != null)
-            {
-                var indicatorGo = Instantiate(startIndicatorPrefab, transform);
-                var indicator = indicatorGo.GetComponent<ConveyorIndicator>();
-                if (indicator != null) indicator.Initialize(this);
-            }
-        }
+        // private void SpawnIndicator()
+        // {
+        //     if (startIndicatorPrefab != null)
+        //     {
+        //         var indicatorGo = Instantiate(startIndicatorPrefab, transform);
+        //         var indicator = indicatorGo.GetComponent<ConveyorIndicator>();
+        //         if (indicator != null) 
+        //     }
+        // }
 
         public void AddRowFromQueue(MinionRowAgent row)
         {

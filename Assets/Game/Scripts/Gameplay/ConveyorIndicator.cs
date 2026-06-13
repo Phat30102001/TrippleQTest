@@ -16,13 +16,13 @@ namespace PeopleFlow.Gameplay
             UpdatePosition();
         }
 
-        private void LateUpdate()
-        {
-            if (_conveyor != null)
-            {
-                UpdatePosition();
-            }
-        }
+        // private void LateUpdate()
+        // {
+        //     if (_conveyor != null)
+        //     {
+        //         UpdatePosition();
+        //     }
+        // }
 
         private void UpdatePosition()
         {

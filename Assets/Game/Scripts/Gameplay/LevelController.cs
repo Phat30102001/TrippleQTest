@@ -9,7 +9,10 @@ namespace PeopleFlow.Gameplay
 
     public class LevelController : MonoBehaviour
     {
+        [Header("Conveyor")]
         public List<Conveyor> ConveyorList;
+        [SerializeField] private ConveyorIndicator startIndicator;
+        [Header("Goal Factory")]
         public GoalFactory GoalFactory;
 
         private int _maxGlobalCapacity;
@@ -17,7 +20,7 @@ namespace PeopleFlow.Gameplay
 
         public bool IsGlobalCapacityFull => _totalActiveRows >= _maxGlobalCapacity;
         private ColorPalette _palette;
-        public void Init(GameObject minionPrefab, ColorPalette palette)
+        public void Init( ColorPalette palette)
         {
             _palette = palette;
             _totalActiveRows = 0;
@@ -28,12 +31,12 @@ namespace PeopleFlow.Gameplay
             {
                 int nextConveyorIndex = (i + 1) % conveyorCount;
                 ConveyorList[i].NextConveyor = ConveyorList[nextConveyorIndex];
-                ConveyorList[i].Init(minionPrefab, palette, this);
+                ConveyorList[i].Init( this);
             }
+            startIndicator.Initialize(ConveyorList[0]);
 
             GoalFactory.AssignEvent(GetConveyor);
-
-
+            
             UpdateGlobalCapacityUI();
         }
 
