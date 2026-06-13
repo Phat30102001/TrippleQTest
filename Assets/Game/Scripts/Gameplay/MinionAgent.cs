@@ -19,7 +19,7 @@ namespace PeopleFlow.Gameplay
         public GameObject PrefabOrigin { get; set; }
         public MinionRowAgent RowParent { get; set; }
 
-        public event Action<MinionAgent> OnRemoved;
+        public  Action<MinionAgent> OnRemoved;
         public  Action OnActive;
 
         private Conveyor _conveyor;
@@ -54,7 +54,7 @@ namespace PeopleFlow.Gameplay
                 PreviousPosition = transform.position;
             }
             gameObject.SetActive(true);
-            OnActive?.Invoke();
+            // OnActive?.Invoke();
         }
 
         public void SetOnConveyor(Conveyor conveyor, float startDistance, float speed)

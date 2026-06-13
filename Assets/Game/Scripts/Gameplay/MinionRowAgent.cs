@@ -25,12 +25,13 @@ namespace PeopleFlow.Gameplay
         public GameObject RowPrefabOrigin { get; set; }
         private bool _isPaused=false;
        [SerializeField] private int activeMinionsCount=0;
-        public void SetData(MinionColor color)
+        public void SetData(MinionColor color, int minionsPerRow)
         {
             RowColor = color;
             // _minions.Clear();
             _isEntering = false;
             _conveyor = null;
+            activeMinionsCount = minionsPerRow;
             gameObject.SetActive(true);
         }
 
@@ -55,14 +56,13 @@ namespace PeopleFlow.Gameplay
             _minions.Add(agent);
             agent.transform.SetParent(transform);
             agent.IsFollowingRow = true;
-            agent.OnRemoved += HandleMinionRemoved;
-            agent.OnActive = (() => activeMinionsCount++);
+            agent.OnRemoved = HandleMinionRemoved;
+            // agent.OnActive = (() => activeMinionsCount++);
         }
         
         private void HandleMinionRemoved(MinionAgent agent)
         {
             // _minions.Remove(agent);
-            agent.OnRemoved -= HandleMinionRemoved;
             activeMinionsCount--;
             if (activeMinionsCount <= 0)
             {

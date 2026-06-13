@@ -69,7 +69,7 @@ namespace PeopleFlow.Gameplay
                     //     rowAgent = rowGo.AddComponent<MinionRowAgent>();
                         
                     rowGo.RowPrefabOrigin = rowAgent.gameObject;
-                    rowGo.SetData(rowData.color);
+                    rowGo.SetData(rowData.color,minionsPerRow);
 
 
                     if (minionsPerRow > rowGo.Minions.Count)
