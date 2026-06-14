@@ -47,13 +47,14 @@ namespace PeopleFlow.Data
     public struct MinionRowData
     {
         public MinionColor color;
-        [Min(1)] public int count;
+        public int rowAmount;
 
-        public MinionRowData(MinionColor color, int count)
+        public MinionRowData(MinionColor color, int rowAmount)
         {
             this.color = color;
-            this.count = count;
+            this.rowAmount = rowAmount;
         }
+
     }
 
     /// <summary>

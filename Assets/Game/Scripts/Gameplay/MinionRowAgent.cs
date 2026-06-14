@@ -11,6 +11,8 @@ namespace PeopleFlow.Gameplay
     /// </summary>
     public class MinionRowAgent : MonoBehaviour
     {
+        [Header("Positioning Settings")]
+        [SerializeField] private float minionHorizontalOffset = 0.8f;
         private Conveyor _conveyor;
         private float _currentDistance;
         private float _moveSpeed;
@@ -25,14 +27,47 @@ namespace PeopleFlow.Gameplay
         public GameObject RowPrefabOrigin { get; set; }
         private bool _isPaused=false;
        [SerializeField] private int activeMinionsCount=0;
-        public void SetData(MinionColor color, int minionsPerRow)
+       [SerializeField] private MinionAgent minionPrefab;
+        public void SetData(MinionColor color,Color displayColor,int minionsPerRow)
         {
+            activeMinionsCount = minionsPerRow;
             RowColor = color;
             // _minions.Clear();
             _isEntering = false;
             _conveyor = null;
-            activeMinionsCount = minionsPerRow;
             gameObject.SetActive(true);
+            foreach (var minion in _minions)
+            {
+                minion.SetData(null, 0, 0, color, displayColor);
+                
+            }
+        }
+
+        public void BuildMinion(int minionsPerRow)
+        {
+            if (minionsPerRow > Minions.Count)
+            {
+                for (int k = 0; k < minionsPerRow; k++)
+                {
+                    var minionGo = Instantiate(minionPrefab, transform);
+                    AddMinion(minionGo);
+                }
+            }
+
+            var minionList = Minions;
+            for (int k = 0; k < minionsPerRow; k++)
+            {
+                float hOffset = (k - (minionsPerRow - 1) * 0.5f) * minionHorizontalOffset;
+                Vector3 minionLocalPos = new Vector3(hOffset, 0, 0);
+                minionList[k].transform.position = transform.TransformPoint(minionLocalPos);
+                minionList[k].transform.rotation = transform.rotation;
+
+                minionList[k].PrefabOrigin = minionPrefab.gameObject;
+
+
+                // Ensure minion is correctly positioned locally within the row
+                minionList[k].transform.localPosition = minionLocalPos;
+            }
         }
 
         private void OnEnable()

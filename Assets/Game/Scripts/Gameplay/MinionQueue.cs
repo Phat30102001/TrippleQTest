@@ -25,16 +25,34 @@ namespace PeopleFlow.Gameplay
 
         private readonly Queue<MinionRowAgent> _rowGroups = new Queue<MinionRowAgent>();
         private Conveyor _conveyor;
-       [SerializeField] private MinionAgent minionPrefab;
+        [SerializeField] private MinionAgent minionPrefab;
         private ColorPalette _palette;
-
-        public event Action<int> OnRowsChanged;
+        private List<MinionRowData> _unsetRowData = new List<MinionRowData>();
+        [Header("Minion preload config")]
+        // this value will load more minions from pool manager
+        // if queue have 20 or less row, load more minions from pool manager, unntil it reach maxPreloadCount
+        [SerializeField] private int minloadCount = 10;
+        
+        // this value for load when start game 
+        // level data have 100 row, maxPreloadCount is 50 => only instantiate 50 minions
+        [SerializeField] private int maxPreloadCount = 20;
+        private int _loadedRowCount = 0;
+        
+        // public event Action<int> OnRowsChanged;
 
         public int RemainingRowCount => _rowGroups.Count;
         public bool IsEmpty => _rowGroups.Count == 0;
+        [Header("Cache data")]
+        private List<MinionRowData> _cacheRowData = new List<MinionRowData>();
+        private MinionColor _currentMinionColorGroup;
+        private int _currentMinionColorGroupSum = 0;
+        private int _currentMinionColorGroupIndex = 0;
+        private int _highestMinionRowSpawned = 0;
+        private Color _cachedDisplayColor;
 
         public void Initialize(MinionQueueData data, Conveyor conveyor, ColorPalette palette)
         {
+            _cacheRowData.AddRange(data.rows);
             _conveyor = conveyor;
             _palette = palette;
 
@@ -45,73 +63,114 @@ namespace PeopleFlow.Gameplay
                 if (row != null && PoolManager.Instance != null)
                     // PoolManager.Instance.Return(rowPrefab, row.gameObject);
                     PoolManager.Instance.Deposit(row);
-                
+
             }
 
             if (data.rows == null) return;
 
             int rowIndex = 0;
-            foreach (var rowData in data.rows)
+            // foreach (var rowData in data.rows)
+            for (int i = 0; i < data.rows.Count; i++)
             {
-                for (int i = 0; i < rowData.count; i++)
+                var rowData = data.rows[i];
+                for (int j = 0; j < rowData.rowAmount; j++)
                 {
-                    // Spawn row parent at origin, then move to local position
-                    // var rowGo = PoolManager.Instance.Get(rowPrefab, transform.position, transform.rotation, transform);
-                    var rowGo= PoolManager.Instance.TryWithraw();
-                    // rowGo.name = $"Queued_Row_{rowData.color}";
-                    if(rowGo == null)
-                        rowGo = Instantiate(rowAgent, transform);
-                    rowGo.transform.SetParent(transform);
-                    // Force exact local position to avoid scale/rotation distortions
-                    rowGo.transform.localPosition = new Vector3(0, groundYOffset, -rowIndex * minionSpacing);
-                    rowGo.transform.localRotation = Quaternion.identity;
-                    // if (!rowGo.TryGetComponent(out MinionRowAgent rowAgent))
-                    //     rowAgent = rowGo.AddComponent<MinionRowAgent>();
-                        
-                    rowGo.RowPrefabOrigin = rowAgent.gameObject;
-                    rowGo.SetData(rowData.color,minionsPerRow);
-
-
-                    if (minionsPerRow > rowGo.Minions.Count)
+                    if (_rowGroups.Count >= maxPreloadCount)
                     {
-                        for (int j = 0; j < minionsPerRow; j++)
-                        {
-                            var minionGo=Instantiate(minionPrefab, rowGo.transform);
-                            rowGo.AddMinion(minionGo);
-                            
-
-
-                            // var minionGo = PoolManager.Instance.Get(_minionPrefab, rowGo.transform.TransformPoint(minionLocalPos), rowGo.transform.rotation, rowGo.transform);
-                            // minionGo = Instantiate(minionPrefab, rowGo.transform.TransformPoint(minionLocalPos),
-                            //     rowGo.transform.rotation, rowGo.transform);
-
-                        }
+                        // Debug.Log("Preload count reached max");
+                        break;
                     }
 
-                    var minionList = rowGo.Minions;
-                    for (int j = 0; j < minionsPerRow; j++)
-                    {                          
-                        float hOffset = (j - (minionsPerRow - 1) * 0.5f) * minionHorizontalOffset;
-                        Vector3 minionLocalPos = new Vector3(hOffset, 0, 0);
-                        minionList[j].transform.position= rowGo.transform.TransformPoint(minionLocalPos);
-                        minionList[j].transform.rotation = rowGo.transform.rotation;
-                        // if (!minionGo.TryGetComponent(out MinionAgent agent))
-                        //     agent = minionGo.AddComponent<MinionAgent>();
+                    var rowGo = BuildMinionRow();
+                    rowGo.BuildMinion(minionsPerRow);
+                    rowGo.SetData(rowData.color, _palette.GetColor(rowData.color),minionsPerRow);
 
-                        minionList[j].PrefabOrigin = minionPrefab.gameObject;
-                        minionList[j].SetData(null, 0, 0, rowData.color, _palette.GetColor(rowData.color));
+                    // if (minionsPerRow > rowGo.Minions.Count)
+                    // {
+                    //     for (int k = 0; k < minionsPerRow; k++)
+                    //     {
+                    //         var minionGo = Instantiate(minionPrefab, rowGo.transform);
+                    //         rowGo.AddMinion(minionGo);
+                    //     }
+                    // }
+                    //
+                    // var minionList = rowGo.Minions;
+                    // for (int k = 0; k < minionsPerRow; k++)
+                    // {
+                    //     float hOffset = (k - (minionsPerRow - 1) * 0.5f) * minionHorizontalOffset;
+                    //     Vector3 minionLocalPos = new Vector3(hOffset, 0, 0);
+                    //     minionList[k].transform.position = rowGo.transform.TransformPoint(minionLocalPos);
+                    //     minionList[k].transform.rotation = rowGo.transform.rotation;
+                    //
+                    //     minionList[k].PrefabOrigin = minionPrefab.gameObject;
+                    //     minionList[k].SetData(null, 0, 0, rowData.color, _palette.GetColor(rowData.color));
+                    //
+                    //     // Ensure minion is correctly positioned locally within the row
+                    //     minionList[k].transform.localPosition = minionLocalPos;
+                    // }
 
-                        // Ensure minion is correctly positioned locally within the row
-                        minionList[j].transform.localPosition = minionLocalPos;
-                    }
 
-                    
                     _rowGroups.Enqueue(rowGo);
+                    _loadedRowCount++;
                     rowIndex++;
+                    _highestMinionRowSpawned++;
                 }
+
+                if (i < data.rows.Count - 1)
+                    UpdateCurrentMinionColorGroup();
             }
-            
-            OnRowsChanged?.Invoke(_rowGroups.Count);
+
+            // OnRowsChanged?.Invoke(_rowGroups.Count);
+        }
+
+        public MinionColor GetMinionColor(int row)
+        {
+            if (_currentMinionColorGroupSum >= row)
+                return _currentMinionColorGroup;
+            else
+            {
+                // get next group color
+                UpdateCurrentMinionColorGroup();
+                return _currentMinionColorGroup;
+            }
+        }
+
+        private void UpdateCurrentMinionColorGroup()
+        {
+            _currentMinionColorGroupIndex++;
+            _currentMinionColorGroupSum += _cacheRowData[_currentMinionColorGroupIndex].rowAmount;
+            _currentMinionColorGroup = _cacheRowData[_currentMinionColorGroupIndex].color;
+            _cachedDisplayColor = _palette.GetColor(_currentMinionColorGroup);
+        }
+
+        private bool CheckReachMinLoadCount()
+        {
+            return _rowGroups.Count >= minloadCount;
+        }
+
+        private MinionRowAgent BuildMinionRow()
+        {
+            // Spawn row parent at origin, then move to local position
+            // var rowGo = PoolManager.Instance.Get(rowPrefab, transform.position, transform.rotation, transform);
+            var rowGo = PoolManager.Instance.TryWithraw();
+            // rowGo.name = $"Queued_Row_{rowData.color}";
+            if (rowGo == null)
+                rowGo = Instantiate(rowAgent, transform);
+            rowGo.transform.SetParent(transform);
+            // Force exact local position to avoid scale/rotation distortions
+            rowGo.transform.localPosition = new Vector3(0, groundYOffset, -_rowGroups.Count * minionSpacing);
+            rowGo.transform.localRotation = Quaternion.identity;
+            // if (!rowGo.TryGetComponent(out MinionRowAgent rowAgent))
+            //     rowAgent = rowGo.AddComponent<MinionRowAgent>();
+
+            rowGo.RowPrefabOrigin = rowAgent.gameObject;
+            return rowGo;
+        }
+
+        private void SetDataForMinionRow(MinionRowAgent row)
+        {
+            MinionColor color = GetMinionColor(_highestMinionRowSpawned);
+            row.SetData(color, _cachedDisplayColor,minionsPerRow);
         }
 
         public bool TryPushRow()
@@ -122,7 +181,7 @@ namespace PeopleFlow.Gameplay
             _conveyor.AddRowFromQueue(row);
 
             UpdateQueueVisuals();
-            OnRowsChanged?.Invoke(_rowGroups.Count);
+            // OnRowsChanged?.Invoke(_rowGroups.Count);
             return true;
         }
 

@@ -74,6 +74,8 @@ MonoBehaviour:
   minionsPerRow: 4
   rowAgent: {fileID: 3282501773769424046, guid: 4a55074e2fc88e44e8f90bb6e346948a, type: 3}
   minionPrefab: {fileID: 6274588902902747852, guid: 1e90dcb336dda2b4981817bcdea055a5, type: 3}
+  minPreloadCount: 5
+  maxPreloadCount: 10
 --- !u!1001 &2653083078894332601
 PrefabInstance:
   m_ObjectHideFlags: 0

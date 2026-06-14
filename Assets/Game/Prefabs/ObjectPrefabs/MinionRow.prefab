@@ -44,3 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f7771251a63da41a5b43a8246a111e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Gameplay.MinionRowAgent
+  minionHorizontalOffset: 0.8
+  activeMinionsCount: 0
+  minionPrefab: {fileID: 6274588902902747852, guid: 1e90dcb336dda2b4981817bcdea055a5, type: 3}
