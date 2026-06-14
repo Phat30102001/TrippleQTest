@@ -47,7 +47,6 @@ namespace PeopleFlow.Gameplay
         private MinionColor _currentMinionColorGroup;
         private int _currentMinionColorGroupSum = 0;
         private int _currentMinionColorGroupIndex = 0;
-        private int _highestMinionRowSpawned = 0;
         private Color _cachedDisplayColor;
 
         public void Initialize(MinionQueueData data, Conveyor conveyor, ColorPalette palette)
@@ -61,15 +60,16 @@ namespace PeopleFlow.Gameplay
             {
                 var row = _rowGroups.Dequeue();
                 if (row != null && PoolManager.Instance != null)
-                    // PoolManager.Instance.Return(rowPrefab, row.gameObject);
                     PoolManager.Instance.Deposit(row);
 
             }
 
             if (data.rows == null) return;
+            PrebuildMinionRow(data);
+        }
 
-            int rowIndex = 0;
-            // foreach (var rowData in data.rows)
+        private void PrebuildMinionRow(MinionQueueData data)
+        {
             for (int i = 0; i < data.rows.Count; i++)
             {
                 var rowData = data.rows[i];
@@ -77,50 +77,24 @@ namespace PeopleFlow.Gameplay
                 {
                     if (_rowGroups.Count >= maxPreloadCount)
                     {
-                        // Debug.Log("Preload count reached max");
-                        break;
+                        UpdateCurrentMinionColorGroup();
+                        return;
                     }
 
                     var rowGo = BuildMinionRow();
                     rowGo.BuildMinion(minionsPerRow);
                     rowGo.SetData(rowData.color, _palette.GetColor(rowData.color),minionsPerRow);
 
-                    // if (minionsPerRow > rowGo.Minions.Count)
-                    // {
-                    //     for (int k = 0; k < minionsPerRow; k++)
-                    //     {
-                    //         var minionGo = Instantiate(minionPrefab, rowGo.transform);
-                    //         rowGo.AddMinion(minionGo);
-                    //     }
-                    // }
-                    //
-                    // var minionList = rowGo.Minions;
-                    // for (int k = 0; k < minionsPerRow; k++)
-                    // {
-                    //     float hOffset = (k - (minionsPerRow - 1) * 0.5f) * minionHorizontalOffset;
-                    //     Vector3 minionLocalPos = new Vector3(hOffset, 0, 0);
-                    //     minionList[k].transform.position = rowGo.transform.TransformPoint(minionLocalPos);
-                    //     minionList[k].transform.rotation = rowGo.transform.rotation;
-                    //
-                    //     minionList[k].PrefabOrigin = minionPrefab.gameObject;
-                    //     minionList[k].SetData(null, 0, 0, rowData.color, _palette.GetColor(rowData.color));
-                    //
-                    //     // Ensure minion is correctly positioned locally within the row
-                    //     minionList[k].transform.localPosition = minionLocalPos;
-                    // }
-
-
                     _rowGroups.Enqueue(rowGo);
                     _loadedRowCount++;
-                    rowIndex++;
-                    _highestMinionRowSpawned++;
                 }
 
+                UpdateCurrentMinionColorGroup();
                 if (i < data.rows.Count - 1)
-                    UpdateCurrentMinionColorGroup();
+                {
+                    _currentMinionColorGroupIndex++;
+                }
             }
-
-            // OnRowsChanged?.Invoke(_rowGroups.Count);
         }
 
         public MinionColor GetMinionColor(int row)
@@ -130,6 +104,7 @@ namespace PeopleFlow.Gameplay
             else
             {
                 // get next group color
+                _currentMinionColorGroupIndex++;
                 UpdateCurrentMinionColorGroup();
                 return _currentMinionColorGroup;
             }
@@ -137,15 +112,18 @@ namespace PeopleFlow.Gameplay
 
         private void UpdateCurrentMinionColorGroup()
         {
-            _currentMinionColorGroupIndex++;
+
             _currentMinionColorGroupSum += _cacheRowData[_currentMinionColorGroupIndex].rowAmount;
             _currentMinionColorGroup = _cacheRowData[_currentMinionColorGroupIndex].color;
             _cachedDisplayColor = _palette.GetColor(_currentMinionColorGroup);
         }
 
-        private bool CheckReachMinLoadCount()
+        private bool CheckCanAddMoreRow()
         {
-            return _rowGroups.Count >= minloadCount;
+            bool isReachMinloadCount = _rowGroups.Count < minloadCount;
+            bool isLoadAllRow = _currentMinionColorGroupIndex >= _cacheRowData.Count - 1 &&
+                                _loadedRowCount >= _currentMinionColorGroupSum;
+            return isReachMinloadCount && !isLoadAllRow;
         }
 
         private MinionRowAgent BuildMinionRow()
@@ -169,8 +147,17 @@ namespace PeopleFlow.Gameplay
 
         private void SetDataForMinionRow(MinionRowAgent row)
         {
-            MinionColor color = GetMinionColor(_highestMinionRowSpawned);
+            MinionColor color = GetMinionColor(_loadedRowCount);
             row.SetData(color, _cachedDisplayColor,minionsPerRow);
+        }
+
+        private void AddMoreRow()
+        {
+           var row= BuildMinionRow();
+           row.BuildMinion(minionsPerRow);
+           SetDataForMinionRow(row);
+           _rowGroups.Enqueue(row);
+           _loadedRowCount++;
         }
 
         public bool TryPushRow()
@@ -182,6 +169,7 @@ namespace PeopleFlow.Gameplay
 
             UpdateQueueVisuals();
             // OnRowsChanged?.Invoke(_rowGroups.Count);
+            if (CheckCanAddMoreRow()) AddMoreRow();
             return true;
         }
 

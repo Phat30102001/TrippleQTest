@@ -21,11 +21,11 @@ MonoBehaviour:
   - conveyorIndex: 0
     rows:
     - color: 0
-      count: 8
+      rowAmount: 8
   - conveyorIndex: 0
     rows:
     - color: 4
-      count: 8
+      rowAmount: 8
   goalLines:
   - position: {x: 0, y: 0.65, z: 6}
     eulerRotation: {x: 0, y: 0, z: 0}
