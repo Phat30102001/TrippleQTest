@@ -74,82 +74,82 @@ namespace PeopleFlow.Gameplay
             if (_view != null) _view.SetRunning(speed > 0.001f);
         }
 
-        public void AnimateEntry(Conveyor targetConveyor, float targetDistance, float speed,
-            UnityEngine.Color displayColor)
-        {
-            StartCoroutine(PerformEntryJump(targetConveyor, targetDistance, speed, displayColor));
-        }
+        // public void AnimateEntry(Conveyor targetConveyor, float targetDistance, float speed,
+        //     UnityEngine.Color displayColor)
+        // {
+        //     StartCoroutine(PerformEntryJump(targetConveyor, targetDistance, speed, displayColor));
+        // }
 
-        private IEnumerator PerformEntryJump(Conveyor targetConveyor, float targetDistance, float speed,
-            UnityEngine.Color displayColor)
-        {
-            _isEntering = true;
-            _conveyor = targetConveyor;
+        // private IEnumerator PerformEntryJump(Conveyor targetConveyor, float targetDistance, float speed,
+        //     UnityEngine.Color displayColor)
+        // {
+        //     _isEntering = true;
+        //     _conveyor = targetConveyor;
+        //
+        //     Vector3 startPos = transform.position;
+        //     float jumpDuration = 0.5f;
+        //     float elapsed = 0f;
+        //
+        //     if (_view == null) _view = GetComponent<MinionView>();
+        //     _view.SetColor(displayColor);
+        //     _view.SetRunning(false);
+        //     _view.PlayJump();
+        //
+        //     while (elapsed < jumpDuration)
+        //     {
+        //         elapsed += Time.deltaTime;
+        //         float t = elapsed / jumpDuration;
+        //
+        //         Vector3 endPos = _conveyor.Path.EvaluatePosition(targetDistance);
+        //         Vector3 currentPos = Vector3.Lerp(startPos, endPos, t);
+        //         currentPos.y += Mathf.Sin(t * Mathf.PI) * 1.5f;
+        //
+        //         transform.position = currentPos;
+        //
+        //         Vector3 dir = (endPos - startPos);
+        //         dir.y = 0;
+        //         if (dir.sqrMagnitude > 0.001f)
+        //             transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+        //
+        //         yield return null;
+        //     }
+        //
+        //     _isEntering = false;
+        //     SetData(targetConveyor, targetDistance, speed, Color, displayColor);
+        //     transform.SetParent(targetConveyor.transform);
+        // }
 
-            Vector3 startPos = transform.position;
-            float jumpDuration = 0.5f;
-            float elapsed = 0f;
+        // private void Update()
+        // {
+        //     if (IsLeaving || _isEntering || IsFollowingRow || _conveyor == null || _moveSpeed < 0.001f) return;
+        //
+        //     PreviousPosition = transform.position;
+        //     _currentDistance += _moveSpeed * Time.deltaTime;
+        //
+        //     if (!_conveyor.Path.IsClosed && _currentDistance >= _conveyor.Path.PathLength)
+        //     {
+        //         if (_conveyor.NextConveyor != null)
+        //         {
+        //             float overshoot = _currentDistance - _conveyor.Path.PathLength;
+        //             SwitchConveyor(_conveyor.NextConveyor, overshoot);
+        //         }
+        //         else
+        //         {
+        //             _currentDistance = _conveyor.Path.PathLength;
+        //         }
+        //     }
+        //
+        //     UpdateTransform();
+        // }
 
-            if (_view == null) _view = GetComponent<MinionView>();
-            _view.SetColor(displayColor);
-            _view.SetRunning(false);
-            _view.PlayJump();
-
-            while (elapsed < jumpDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / jumpDuration;
-
-                Vector3 endPos = _conveyor.Path.EvaluatePosition(targetDistance);
-                Vector3 currentPos = Vector3.Lerp(startPos, endPos, t);
-                currentPos.y += Mathf.Sin(t * Mathf.PI) * 1.5f;
-
-                transform.position = currentPos;
-
-                Vector3 dir = (endPos - startPos);
-                dir.y = 0;
-                if (dir.sqrMagnitude > 0.001f)
-                    transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
-
-                yield return null;
-            }
-
-            _isEntering = false;
-            SetData(targetConveyor, targetDistance, speed, Color, displayColor);
-            transform.SetParent(targetConveyor.transform);
-        }
-
-        private void Update()
-        {
-            if (IsLeaving || _isEntering || IsFollowingRow || _conveyor == null || _moveSpeed < 0.001f) return;
-
-            PreviousPosition = transform.position;
-            _currentDistance += _moveSpeed * Time.deltaTime;
-
-            if (!_conveyor.Path.IsClosed && _currentDistance >= _conveyor.Path.PathLength)
-            {
-                if (_conveyor.NextConveyor != null)
-                {
-                    float overshoot = _currentDistance - _conveyor.Path.PathLength;
-                    SwitchConveyor(_conveyor.NextConveyor, overshoot);
-                }
-                else
-                {
-                    _currentDistance = _conveyor.Path.PathLength;
-                }
-            }
-
-            UpdateTransform();
-        }
-
-        private void SwitchConveyor(Conveyor next, float startDistance)
-        {
-            _conveyor.RemoveAgent(this);
-            _conveyor = next;
-            // No direct AddAgent on Conveyor anymore, it handles via rows or direct
-            _currentDistance = startDistance;
-            transform.SetParent(_conveyor.transform);
-        }
+        // private void SwitchConveyor(Conveyor next, float startDistance)
+        // {
+        //     _conveyor.RemoveAgent(this);
+        //     _conveyor = next;
+        //     // No direct AddAgent on Conveyor anymore, it handles via rows or direct
+        //     _currentDistance = startDistance;
+        //     transform.SetParent(_conveyor.transform);
+        // }
 
         private void UpdateTransform()
         {
