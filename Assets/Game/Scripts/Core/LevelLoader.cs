@@ -102,6 +102,7 @@ namespace PeopleFlow.Core
                 for (int i = 0; i < unspawnAmount; i++)
                 {
                     var queueGo = Instantiate(minionQueuePrefab, Vector3.zero, Quaternion.identity, parent);
+                    queueGo.name = "Minion Queue " + (minionQueues.Count + 1);
                     minionQueues.Add(queueGo.GetComponent<MinionQueue>());
                 }
             }
@@ -123,15 +124,15 @@ namespace PeopleFlow.Core
         
         public void ResetLevel(Action callback)
         {
-            EndLevel();
+            EndLevel(false);
             SetData(_levelIndex, _cachedLevelData, callback);
         }
 
-        public void EndLevel()
+        public void EndLevel(bool isWin)
         {
             if (timerSystem != null) timerSystem.Stop();
             if (inputReader != null) inputReader.SetEnabled(false);
-            levelController.EndLevel();
+            if(!isWin) levelController.EndLevel();
             foreach (var queue in minionQueues)
             {
                 queue.gameObject.SetActive(false);

@@ -24,6 +24,7 @@ namespace PeopleFlow.Gameplay
         [SerializeField] private MinionRowAgent rowAgent;
 
         private readonly Queue<MinionRowAgent> _rowGroups = new Queue<MinionRowAgent>();
+        public List<MinionRowAgent> _rowGroupList= new List<MinionRowAgent>();
         
         private Conveyor _conveyor;
         [SerializeField] private MinionAgent minionPrefab;
@@ -50,6 +51,14 @@ namespace PeopleFlow.Gameplay
         private int _currentMinionColorGroupIndex = 0;
         private Color _cachedDisplayColor;
 
+        public void ConvertQueueToList()
+        {
+            _rowGroupList.Clear();
+            foreach (var row in _rowGroups)
+            {
+                _rowGroupList.Add(row);
+            }
+        }
         public void Initialize(MinionQueueData data, Conveyor conveyor, ColorPalette palette)
         {
             _cacheRowData=data.rows;
@@ -100,6 +109,8 @@ namespace PeopleFlow.Gameplay
                     _currentMinionColorGroupIndex++;
                 }
             }
+
+            ConvertQueueToList();
         }
 
         private void ResetCacheData()
@@ -148,7 +159,11 @@ namespace PeopleFlow.Gameplay
                 rowGo = Instantiate(rowAgent, transform);
                 Debug.Log("Create new row");
             }
-            rowGo.transform.SetParent(transform);
+            else
+            {
+                rowGo.transform.SetParent(transform);
+
+            }
             // Force exact local position to avoid scale/rotation distortions
             rowGo.transform.localPosition = new Vector3(0, groundYOffset, -_rowGroups.Count * minionSpacing);
             rowGo.transform.localRotation = Quaternion.identity;

@@ -103,7 +103,7 @@ namespace PeopleFlow.Core
             if (CurrentState != GameSessionState.Playing) return;
 
             CurrentState = GameSessionState.Won;
-            EndSession();
+            EndSession(true);
             OnGameStateChanged?.Invoke(CurrentState, null);
         }
 
@@ -113,14 +113,14 @@ namespace PeopleFlow.Core
 
             CurrentState = GameSessionState.Failed;
             FailureReason = loseReason;
-            EndSession();
+            EndSession(false);
 
             OnGameStateChanged?.Invoke(CurrentState, new[] { loseReason });
         }
 
-        private void EndSession()
+        private void EndSession(bool isWin)
         {
-            levelLoader.EndLevel();
+            levelLoader.EndLevel(isWin);
         }
 
         public void RestartSession()
