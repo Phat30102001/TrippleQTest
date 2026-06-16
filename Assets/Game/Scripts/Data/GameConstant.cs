@@ -12,3 +12,16 @@
         public const string ConveyorOverflow = "ConveyorOverflow";
         public const string None = "None";
     }
+    public enum MinionColor
+    {
+        Blue = 0,
+        Orange = 1,
+        Teal = 2,
+        Red = 3,
+        Green = 4,
+        Yellow = 5,
+        Purple = 6,
+        Pink = 7,
+        White = 8,
+        Brown = 9,
+    }

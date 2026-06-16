@@ -21,9 +21,6 @@ namespace PeopleFlow.Data
     [Serializable]
     public class GoalLineData
     {
-        public Vector3 position;
-        public Vector3 eulerRotation;
-        public int conveyorIndex = 0;
         public List<GoalGateData> gates = new List<GoalGateData>();
     }
 
@@ -33,10 +30,6 @@ namespace PeopleFlow.Data
     [Serializable]
     public class LockedGoalLineData
     {
-        public Vector3 position;
-        public Vector3 eulerRotation;
-        public int conveyorIndex = 0;
-        [Min(1)] public int unlockCounter = 1;
         public List<GoalGateData> gates = new List<GoalGateData>();
     }
 
@@ -73,20 +66,20 @@ namespace PeopleFlow.Data
     /// <summary>
     /// Configuration for a single conveyor belt segment.
     /// </summary>
-    [Serializable]
-    public class ConveyorData
-    {
-        [Tooltip("Path the minions travel along.")]
-        public Spline path = new Spline();
-        public bool isClosed = true;
-        [Tooltip("Index of the next conveyor in the sequence (-1 for none).")]
-        public int nextConveyorIndex = -1;
-        
-        [Min(1)] public int capacityRows = 8;
-        [Min(0.1f)] public float minionSpeed = 3f;
-        [Min(0.1f)] public float rowSpacing = 1.5f;
-        [Min(1)] public int minionsPerRow = 3;
-    }
+    // [Serializable]
+    // public class ConveyorData
+    // {
+    //     [Tooltip("Path the minions travel along.")]
+    //     public Spline path = new Spline();
+    //     // public bool isClosed = true;
+    //     // [Tooltip("Index of the next conveyor in the sequence (-1 for none).")]
+    //     // public int nextConveyorIndex = -1;
+    //     //
+    //     // [Min(1)] public int capacityRows = 8;
+    //     // [Min(0.1f)] public float minionSpeed = 3f;
+    //     // [Min(0.1f)] public float rowSpacing = 1.5f;
+    //     // [Min(1)] public int minionsPerRow = 3;
+    // }
 
     /// <summary>
     /// Complete data-driven definition of a level.
@@ -104,7 +97,7 @@ namespace PeopleFlow.Data
         [Tooltip("Total number of minion rows allowed on all conveyors combined.")]
         [Min(1)] public int maxGlobalCapacityRows = 10;
 
-        public List<ConveyorData> conveyors = new List<ConveyorData>();
+        // public List<ConveyorData> conveyors = new List<ConveyorData>();
         public List<MinionQueueData> startColumns = new List<MinionQueueData>();
         public List<GoalLineData> goalLines = new List<GoalLineData>();
         public List<LockedGoalLineData> lockedGoalLines = new List<LockedGoalLineData>();
@@ -128,9 +121,6 @@ namespace PeopleFlow.Data
             Debug.Log("Creating default goal line data");
             return new GoalLineData()
             {
-                position = Vector3.zero,
-                eulerRotation = Vector3.zero,
-                conveyorIndex = 0,
                 gates = new List<GoalGateData>()
             };
         }

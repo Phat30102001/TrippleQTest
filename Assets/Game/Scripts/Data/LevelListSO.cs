@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PeopleFlow.Data
 {
-[CreateAssetMenu(fileName = "LevelListSO", menuName = "Scriptable Objects/LevelListSO")]
+[CreateAssetMenu(fileName = "LevelListSO", menuName = "PeopleFlow/LevelListSO")]
     public class LevelListSO : ScriptableObject
     {
         public List<LevelSO> LevelSO;
