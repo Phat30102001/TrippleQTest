@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 459e5281c830da34da002f5c3144af01, type: 3}
   m_Name: Level_2
   m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Data.LevelConfig
-  timeLimit: 180
+  timeLimit: 60
   queueSpacing: 2.5
   queueZOffset: -10
   maxGlobalCapacityRows: 15
-  conveyors: []
   startColumns:
   - conveyorIndex: 0
     rows:
@@ -33,18 +32,12 @@ MonoBehaviour:
     - color: 4
       rowAmount: 8
   goalLines:
-  - position: {x: 0, y: 0.65, z: 6}
-    eulerRotation: {x: 0, y: 0, z: 0}
-    conveyorIndex: 0
-    gates:
+  - gates:
     - color: 5
       count: 32
     - color: 4
       count: 32
-  - position: {x: 8, y: 0.65, z: 0}
-    eulerRotation: {x: 0, y: -90, z: 0}
-    conveyorIndex: 0
-    gates:
+  - gates:
     - color: 0
       count: 32
     - color: 4
