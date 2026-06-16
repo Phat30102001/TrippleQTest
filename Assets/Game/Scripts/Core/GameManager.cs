@@ -61,7 +61,7 @@ namespace PeopleFlow.Core
                 {
                     CurrentState = GameSessionState.Playing;
                     FailureReason = GameFailReason.None;
-                    OnGameStateChanged?.Invoke(CurrentState, new object[] { levelLoader.GetActiveLevel() });
+                    OnGameStateChanged?.Invoke(CurrentState, new object[] { levelLoader.GetActiveLevel().name });
                     callback?.Invoke();
                 }),
                 null);
