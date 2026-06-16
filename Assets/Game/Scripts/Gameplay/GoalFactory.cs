@@ -12,9 +12,11 @@ namespace PeopleFlow.Gameplay
     {
         private Func<int,Conveyor> _onGetTargetConveyor;
         [SerializeField] private List<GoalLine> _goalLines;
+        private List<Conveyor> _conveyors = new List<Conveyor>();
         
-        public void BuildGoalLines(ColorPalette palette,List<GoalLineData> goalLineDatas)
+        public void BuildGoalLines(ColorPalette palette,List<GoalLineData> goalLineDatas, List<Conveyor> conveyors)
         {
+            _conveyors=conveyors;
             // check if data count matches line count, if not create default data
             if (_goalLines.Count > goalLineDatas.Count)
             {
@@ -28,13 +30,13 @@ namespace PeopleFlow.Gameplay
             for (int i=0; i<_goalLines.Count; i++)
             {
                 var line = _goalLines[i];
-                var targetConveyor = _onGetTargetConveyor(goalLineDatas[i].conveyorIndex);
+                // var targetConveyor = _onGetTargetConveyor(goalLineDatas[i].conveyorIndex);
 
                 // Automatic Fallback: Find nearest conveyor if none found by index
-                if (targetConveyor == null)
-                {
-                    targetConveyor = FindNearestConveyor(line.transform.position);
-                }
+                // if (targetConveyor == null)
+                // {
+                    var targetConveyor = FindNearestConveyor(line.transform.position);
+                // }
 
                 line.Build(goalLineDatas[i].gates, targetConveyor, palette, false);
             }
@@ -44,8 +46,7 @@ namespace PeopleFlow.Gameplay
         {
             Conveyor nearest = null;
             float minDist = float.MaxValue;
-            var conveyors = UnityEngine.Object.FindObjectsByType<Conveyor>(FindObjectsSortMode.None);
-            foreach (var conv in conveyors)
+            foreach (var conv in _conveyors)
             {
                 // Compare distance on XZ plane
                 float dist = Vector3.Distance(new Vector3(position.x, 0, position.z), 

@@ -43,7 +43,7 @@ namespace PeopleFlow.Gameplay
         public void SetData(LevelConfig activeLevel)
         {
             _maxGlobalCapacity = activeLevel.maxGlobalCapacityRows;
-            GoalFactory.BuildGoalLines(_palette, activeLevel.goalLines);
+            GoalFactory.BuildGoalLines(_palette, activeLevel.goalLines,ConveyorList);
         }
 
         public void RegisterRowStateChanged(int delta)

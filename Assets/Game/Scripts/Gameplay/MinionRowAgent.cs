@@ -28,6 +28,22 @@ namespace PeopleFlow.Gameplay
         private bool _isPaused=false;
        [SerializeField] private int activeMinionsCount=0;
        [SerializeField] private MinionAgent minionPrefab;
+
+       private Vector3 previousPosition;
+       public Vector3 PreviousPosition
+       {
+           get
+           {
+               return previousPosition;
+           }
+           private set
+           {
+               // Debug.Log($"cache new position: {value}");
+               previousPosition = value;
+           }
+       }
+
+       public bool CanDetected { get; set; }
         public void SetData(MinionColor color,Color displayColor,int minionsPerRow)
         {
             activeMinionsCount = minionsPerRow;
@@ -36,11 +52,13 @@ namespace PeopleFlow.Gameplay
             _isEntering = false;
             _conveyor = null;
             gameObject.SetActive(true);
+            CanDetected = true;
             foreach (var minion in _minions)
             {
                 minion.SetData(null, 0, 0, color, displayColor);
                 
             }
+            PreviousPosition = transform.position;
         }
 
         public void BuildMinion(int minionsPerRow)
@@ -112,6 +130,7 @@ namespace PeopleFlow.Gameplay
                 // else
                 // {
                     gameObject.SetActive(false); 
+                    gameObject.transform.SetParent(PoolManager.Instance.transform);
                 // }
             }
         }
@@ -130,6 +149,7 @@ namespace PeopleFlow.Gameplay
             }
             
             UpdateTransform();
+            PreviousPosition = transform.position;
         }
 
         public void AnimateEntry(Conveyor targetConveyor, float targetDistance, float speed)
@@ -180,7 +200,7 @@ namespace PeopleFlow.Gameplay
         {
             if (_isPaused) return;
             if (_isEntering || _conveyor == null || _moveSpeed < 0.001f) return;
-            
+            PreviousPosition = transform.position;
             _currentDistance += _moveSpeed * Time.deltaTime;
             
             // Check for path transition

@@ -24,6 +24,7 @@ namespace PeopleFlow.Gameplay
         [SerializeField] private MinionRowAgent rowAgent;
 
         private readonly Queue<MinionRowAgent> _rowGroups = new Queue<MinionRowAgent>();
+        
         private Conveyor _conveyor;
         [SerializeField] private MinionAgent minionPrefab;
         private ColorPalette _palette;
@@ -51,7 +52,7 @@ namespace PeopleFlow.Gameplay
 
         public void Initialize(MinionQueueData data, Conveyor conveyor, ColorPalette palette)
         {
-            _cacheRowData.AddRange(data.rows);
+            _cacheRowData=data.rows;
             _conveyor = conveyor;
             _palette = palette;
 
@@ -63,9 +64,13 @@ namespace PeopleFlow.Gameplay
                     PoolManager.Instance.Deposit(row);
 
             }
-
+            ResetCacheData();
+            
+            // Build new minion queue
             if (data.rows == null) return;
             PrebuildMinionRow(data);
+            
+            Debug.Log($"MinionQueue initialized with {_rowGroups.Count} rows");
         }
 
         private void PrebuildMinionRow(MinionQueueData data)
@@ -95,6 +100,12 @@ namespace PeopleFlow.Gameplay
                     _currentMinionColorGroupIndex++;
                 }
             }
+        }
+
+        private void ResetCacheData()
+        {
+            _currentMinionColorGroupIndex = 0;
+            _currentMinionColorGroupSum = 0;
         }
 
         public MinionColor GetMinionColor(int row)
@@ -133,7 +144,10 @@ namespace PeopleFlow.Gameplay
             var rowGo = PoolManager.Instance.TryWithraw();
             // rowGo.name = $"Queued_Row_{rowData.color}";
             if (rowGo == null)
+            {
                 rowGo = Instantiate(rowAgent, transform);
+                Debug.Log("Create new row");
+            }
             rowGo.transform.SetParent(transform);
             // Force exact local position to avoid scale/rotation distortions
             rowGo.transform.localPosition = new Vector3(0, groundYOffset, -_rowGroups.Count * minionSpacing);
@@ -169,7 +183,11 @@ namespace PeopleFlow.Gameplay
 
             UpdateQueueVisuals();
             // OnRowsChanged?.Invoke(_rowGroups.Count);
-            if (CheckCanAddMoreRow()) AddMoreRow();
+            if (CheckCanAddMoreRow())
+            {
+                Debug.Log("Add more row");
+                AddMoreRow();
+            }
             return true;
         }
 

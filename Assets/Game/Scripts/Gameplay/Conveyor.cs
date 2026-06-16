@@ -27,8 +27,8 @@ namespace PeopleFlow.Gameplay
 
         public int CurrentOccupiedRows => _activeRows.Count;
         public bool IsFull => _levelController != null && _levelController.IsGlobalCapacityFull;
-        public IReadOnlyList<MinionAgent> ActiveMinions => _activeMinions;
 
+        public List<MinionRowAgent> ActiveRows => _activeRows;
 
 
         public void Init( LevelController levelController)

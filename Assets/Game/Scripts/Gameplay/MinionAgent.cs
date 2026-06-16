@@ -161,7 +161,7 @@ namespace PeopleFlow.Gameplay
                 transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
         }
 
-        public void EnterGate(Vector3 targetHolePosition)
+        public void EnterGate(Vector3 targetHolePosition, Action callback)
         {
             if (IsLeaving) return;
 
@@ -170,10 +170,10 @@ namespace PeopleFlow.Gameplay
             // transform.SetParent(null);
 
             _view.PlayJump();
-            StartCoroutine(PerformJumpToHole(targetHolePosition));
+            StartCoroutine(PerformJumpToHole(targetHolePosition,callback));
         }
 
-        private IEnumerator PerformJumpToHole(Vector3 target)
+        private IEnumerator PerformJumpToHole(Vector3 target, Action callback)
         {
             Vector3 startPos = transform.position;
             Vector3 peakOffset = Vector3.up * 0.6f;
@@ -196,7 +196,7 @@ namespace PeopleFlow.Gameplay
 
                 yield return null;
             }
-
+            callback?.Invoke();
             OnRemoved?.Invoke(this);
             //
             // if (PrefabOrigin != null && PoolManager.Instance != null)

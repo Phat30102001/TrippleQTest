@@ -50,19 +50,25 @@ namespace PeopleFlow.Gameplay
 
             Vector3 anchor = holeAnchor != null ? holeAnchor.position : transform.position;
             float radiusSquared = captureRadius * captureRadius;
-            var minions = _conveyor.ActiveMinions;
+            var minionRow = _conveyor.ActiveRows;
 
-            for (int i = 0; i < minions.Count; i++)
+            for (int i = 0; i < minionRow.Count; i++)
             {
-                var minion = minions[i];
-                if (minion == null || minion.IsLeaving) continue;
-                if (minion.Color != GoalColor) continue;
+                var row = minionRow[i];
+                if (row == null || !row.CanDetected) continue;
+                if (row.RowColor != GoalColor) continue;
 
                 // Swept distance test on XZ plane between anchor and the minion's movement segment
-                float distSq = GetSqrDistancePointSegmentXZ(anchor, minion.PreviousPosition, minion.transform.position);
+                float distSq = GetSqrDistancePointSegmentXZ(anchor, row.PreviousPosition, row.transform.position);
+                // float distSq = Vector3.Distance(anchor, row.transform.position);
+                // Debug.Log($" distance: {distSq}");
                 if (distSq <= radiusSquared)
                 {
-                    ConsumeMinion(minion, anchor);
+                    row.CanDetected = false;
+                    foreach (var minion in row.Minions)
+                    {
+                        ConsumeMinion(minion, anchor);
+                    }
                     if (IsCompleted) break;
                 }
             }
@@ -70,15 +76,17 @@ namespace PeopleFlow.Gameplay
 
         private void ConsumeMinion(MinionAgent minion, Vector3 anchor)
         {
-            minion.EnterGate(anchor);
-            RemainingCount--;
-            OnCountChanged?.Invoke(this);
-
-            if (RemainingCount <= 0)
+            minion.EnterGate(anchor, (() =>
             {
-                RemainingCount = 0;
-                Complete();
-            }
+                RemainingCount--;
+                OnCountChanged?.Invoke(this);
+
+                if (RemainingCount <= 0)
+                {
+                    RemainingCount = 0;
+                    Complete();
+                }
+            }));
         }
 
         private void Complete()
