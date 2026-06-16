@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LevelListSO
   m_EditorClassIdentifier: Assembly-CSharp-Editor::LevelListSO
   LevelSO:
+  - LevelConfig: {fileID: 11400000, guid: a59e8707d97ab454181755b3da12b04d, type: 2}
+    LevelController: {fileID: 1822251932338903620, guid: 3e38338120ab7c944a5e7f81740f276d, type: 3}
   - LevelConfig: {fileID: 11400000, guid: cab495bdaa6cf774daedd3160df159cb, type: 2}
     LevelController: {fileID: 4121370146803848430, guid: a90be71a0324702498338e28a465f64e, type: 3}
-  - LevelConfig: {fileID: 11400000, guid: a59e8707d97ab454181755b3da12b04d, type: 2}
-    LevelController: {fileID: 8394037696812910406, guid: 9141c39cc766b1141b18cacfa19bcfc0, type: 3}

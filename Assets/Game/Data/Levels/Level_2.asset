@@ -20,23 +20,33 @@ MonoBehaviour:
   startColumns:
   - conveyorIndex: 0
     rows:
-    - color: 2
-      count: 5
+    - color: 0
+      rowAmount: 8
   - conveyorIndex: 0
     rows:
-    - color: 1
-      count: 10
+    - color: 4
+      rowAmount: 8
+  - conveyorIndex: 0
+    rows:
+    - color: 5
+      rowAmount: 8
+    - color: 4
+      rowAmount: 8
   goalLines:
   - position: {x: 0, y: 0.65, z: 6}
     eulerRotation: {x: 0, y: 0, z: 0}
     conveyorIndex: 0
     gates:
-    - color: 0
+    - color: 5
+      count: 32
+    - color: 4
       count: 32
   - position: {x: 8, y: 0.65, z: 0}
     eulerRotation: {x: 0, y: -90, z: 0}
     conveyorIndex: 0
     gates:
+    - color: 0
+      count: 32
     - color: 4
       count: 32
   lockedGoalLines: []

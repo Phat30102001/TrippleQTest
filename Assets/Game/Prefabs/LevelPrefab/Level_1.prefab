@@ -344,7 +344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PeopleFlow.Gameplay.Conveyor
   _minionsPerRow: 4
-  _rowSpacing: 0
+  _rowSpacing: 0.5
   _movementSpeed: 7
   _activeRows: []
 --- !u!1 &8707110302096535565
